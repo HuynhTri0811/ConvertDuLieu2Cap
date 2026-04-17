@@ -1,0 +1,241 @@
+﻿<?xml version="1.0" encoding="UTF-8" ?>
+<root>
+  <provinces>
+    <code>01</code>
+    <name>Thành phố Hà Nội</name>
+    <englishName></englishName>
+    <administrativeLevel>Thành phố Trung ương</administrativeLevel>
+    <decree>x</decree>
+  </provinces>
+  <provinces>
+    <code>04</code>
+    <name>Tỉnh Cao Bằng</name>
+    <englishName></englishName>
+    <administrativeLevel>Tỉnh</administrativeLevel>
+    <decree>x</decree>
+  </provinces>
+  <provinces>
+    <code>08</code>
+    <name>Tỉnh Tuyên Quang</name>
+    <englishName></englishName>
+    <administrativeLevel>Tỉnh</administrativeLevel>
+    <decree>202/2025/QH15 - 12/06/2025</decree>
+  </provinces>
+  <provinces>
+    <code>11</code>
+    <name>Tỉnh Điện Biên</name>
+    <englishName></englishName>
+    <administrativeLevel>Tỉnh</administrativeLevel>
+    <decree>202/2025/QH15 - 12/06/2025</decree>
+  </provinces>
+  <provinces>
+    <code>12</code>
+    <name>Tỉnh Lai Châu</name>
+    <englishName></englishName>
+    <administrativeLevel>Tỉnh</administrativeLevel>
+    <decree>202/2025/QH15 - 12/06/2025</decree>
+  </provinces>
+  <provinces>
+    <code>14</code>
+    <name>Tỉnh Sơn La</name>
+    <englishName></englishName>
+    <administrativeLevel>Tỉnh</administrativeLevel>
+    <decree>202/2025/QH15 - 12/06/2025</decree>
+  </provinces>
+  <provinces>
+    <code>15</code>
+    <name>Tỉnh Lào Cai</name>
+    <englishName></englishName>
+    <administrativeLevel>Tỉnh</administrativeLevel>
+    <decree></decree>
+  </provinces>
+  <provinces>
+    <code>19</code>
+    <name>Tỉnh Thái Nguyên</name>
+    <englishName></englishName>
+    <administrativeLevel>Tỉnh</administrativeLevel>
+    <decree>202/2025/QH15 - 12/06/2025</decree>
+  </provinces>
+  <provinces>
+    <code>20</code>
+    <name>Tỉnh Lạng Sơn</name>
+    <englishName></englishName>
+    <administrativeLevel>Tỉnh</administrativeLevel>
+    <decree>202/2025/QH15 - 12/06/2025</decree>
+  </provinces>
+  <provinces>
+    <code>22</code>
+    <name>Tỉnh Quảng Ninh</name>
+    <englishName></englishName>
+    <administrativeLevel>Tỉnh</administrativeLevel>
+    <decree>202/2025/QH15 - 12/06/2025</decree>
+  </provinces>
+  <provinces>
+    <code>24</code>
+    <name>Tỉnh Bắc Ninh</name>
+    <englishName></englishName>
+    <administrativeLevel>Tỉnh</administrativeLevel>
+    <decree></decree>
+  </provinces>
+  <provinces>
+    <code>25</code>
+    <name>Tỉnh Phú Thọ</name>
+    <englishName></englishName>
+    <administrativeLevel>Tỉnh</administrativeLevel>
+    <decree>202/2025/QH15 - 12/06/2025</decree>
+  </provinces>
+  <provinces>
+    <code>31</code>
+    <name>Thành phố Hải Phòng</name>
+    <englishName></englishName>
+    <administrativeLevel>Thành phố Trung ương</administrativeLevel>
+    <decree>202/2025/QH15 - 12/06/2025</decree>
+  </provinces>
+  <provinces>
+    <code>33</code>
+    <name>Tỉnh Hưng Yên</name>
+    <englishName></englishName>
+    <administrativeLevel>Tỉnh</administrativeLevel>
+    <decree>202/2025/QH15 - 12/06/2025</decree>
+  </provinces>
+  <provinces>
+    <code>37</code>
+    <name>Tỉnh Ninh Bình</name>
+    <englishName></englishName>
+    <administrativeLevel>Tỉnh</administrativeLevel>
+    <decree>202/2025/QH15 - 12/06/2025</decree>
+  </provinces>
+  <provinces>
+    <code>38</code>
+    <name>Tỉnh Thanh Hóa</name>
+    <englishName></englishName>
+    <administrativeLevel>Tỉnh</administrativeLevel>
+    <decree>202/2025/QH15 - 12/06/2025</decree>
+  </provinces>
+  <provinces>
+    <code>40</code>
+    <name>Tỉnh Nghệ An</name>
+    <englishName></englishName>
+    <administrativeLevel>Tỉnh</administrativeLevel>
+    <decree>202/2025/QH15 - 12/06/2025</decree>
+  </provinces>
+  <provinces>
+    <code>42</code>
+    <name>Tỉnh Hà Tĩnh</name>
+    <englishName></englishName>
+    <administrativeLevel>Tỉnh</administrativeLevel>
+    <decree>202/2025/QH15 - 12/06/2025</decree>
+  </provinces>
+  <provinces>
+    <code>44</code>
+    <name>Tỉnh Quảng Trị</name>
+    <englishName></englishName>
+    <administrativeLevel>Tỉnh</administrativeLevel>
+    <decree></decree>
+  </provinces>
+  <provinces>
+    <code>46</code>
+    <name>Thành phố Huế</name>
+    <englishName></englishName>
+    <administrativeLevel>Thành phố Trung ương</administrativeLevel>
+    <decree>202/2025/QH15 - 12/06/2025</decree>
+  </provinces>
+  <provinces>
+    <code>48</code>
+    <name>Thành phố Đà Nẵng</name>
+    <englishName></englishName>
+    <administrativeLevel>Thành phố Trung ương</administrativeLevel>
+    <decree>202/2025/QH15 - 12/06/2025</decree>
+  </provinces>
+  <provinces>
+    <code>51</code>
+    <name>Tỉnh Quảng Ngãi</name>
+    <englishName></englishName>
+    <administrativeLevel>Tỉnh</administrativeLevel>
+    <decree>202/2025/QH15 - 12/06/2025</decree>
+  </provinces>
+  <provinces>
+    <code>52</code>
+    <name>Tỉnh Gia Lai</name>
+    <englishName></englishName>
+    <administrativeLevel>Tỉnh</administrativeLevel>
+    <decree></decree>
+  </provinces>
+  <provinces>
+    <code>56</code>
+    <name>Tỉnh Khánh Hòa</name>
+    <englishName></englishName>
+    <administrativeLevel>Tỉnh</administrativeLevel>
+    <decree>202/2025/QH15 - 12/06/2025</decree>
+  </provinces>
+  <provinces>
+    <code>66</code>
+    <name>Tỉnh Đắk Lắk</name>
+    <englishName></englishName>
+    <administrativeLevel>Tỉnh</administrativeLevel>
+    <decree>202/2025/QH15 - 12/06/2025</decree>
+  </provinces>
+  <provinces>
+    <code>68</code>
+    <name>Tỉnh Lâm Đồng</name>
+    <englishName></englishName>
+    <administrativeLevel>Tỉnh</administrativeLevel>
+    <decree>202/2025/QH15 - 12/06/2025</decree>
+  </provinces>
+  <provinces>
+    <code>75</code>
+    <name>Tỉnh Đồng Nai</name>
+    <englishName></englishName>
+    <administrativeLevel>Tỉnh</administrativeLevel>
+    <decree>202/2025/QH15 - 12/06/2025</decree>
+  </provinces>
+  <provinces>
+    <code>79</code>
+    <name>Thành phố Hồ Chí Minh</name>
+    <englishName></englishName>
+    <administrativeLevel>Thành phố Trung ương</administrativeLevel>
+    <decree>202/2025/QH15 - 12/06/2025</decree>
+  </provinces>
+  <provinces>
+    <code>80</code>
+    <name>Tỉnh Tây Ninh</name>
+    <englishName></englishName>
+    <administrativeLevel>Tỉnh</administrativeLevel>
+    <decree></decree>
+  </provinces>
+  <provinces>
+    <code>82</code>
+    <name>Tỉnh Đồng Tháp</name>
+    <englishName></englishName>
+    <administrativeLevel>Tỉnh</administrativeLevel>
+    <decree></decree>
+  </provinces>
+  <provinces>
+    <code>86</code>
+    <name>Tỉnh Vĩnh Long</name>
+    <englishName></englishName>
+    <administrativeLevel>Tỉnh</administrativeLevel>
+    <decree>202/2025/QH15 - 12/06/2025</decree>
+  </provinces>
+  <provinces>
+    <code>91</code>
+    <name>Tỉnh An Giang</name>
+    <englishName></englishName>
+    <administrativeLevel>Tỉnh</administrativeLevel>
+    <decree></decree>
+  </provinces>
+  <provinces>
+    <code>92</code>
+    <name>Thành phố Cần Thơ</name>
+    <englishName></englishName>
+    <administrativeLevel>Thành phố Trung ương</administrativeLevel>
+    <decree>202/2025/QH15 - 12/06/2025</decree>
+  </provinces>
+  <provinces>
+    <code>96</code>
+    <name>Tỉnh Cà Mau</name>
+    <englishName></englishName>
+    <administrativeLevel>Tỉnh</administrativeLevel>
+    <decree>202/2025/QH15 - 12/06/2025</decree>
+  </provinces>
+</root>
