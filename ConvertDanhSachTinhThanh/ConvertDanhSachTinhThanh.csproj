@@ -81,6 +81,9 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AutoWaitForm.cs" />
+    <Compile Include="Constants\AppConstants.cs" />
+    <Compile Include="DataAccess\DatabaseHelper.cs" />
+    <Compile Include="Helpers\StringNormalizer.cs" />
     <Compile Include="Model\DiaChiMoi.cs" />
     <Compile Include="Model\DiaChiCu.cs" />
     <Compile Include="Form1.cs">

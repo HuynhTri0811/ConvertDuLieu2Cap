@@ -16,6 +16,9 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.Xml.Serialization;
+using ConvertDanhSachTinhThanh.Constants;
+using ConvertDanhSachTinhThanh.Helpers;
+using ConvertDanhSachTinhThanh.DataAccess;
 
 namespace ConvertDanhSachTinhThanh
 {
@@ -155,14 +158,12 @@ namespace ConvertDanhSachTinhThanh
                 try
                 {
                     connection.Open();
-                    Console.WriteLine("✅ Connection successful.");
+                    Console.WriteLine("Connection successful.");
                 }
                 catch (SqlException ex)
                 {
-                    Console.WriteLine("❌ Connection failed: " + ex.Message);
+                    Console.WriteLine("Connection failed: " + ex.Message);
                 }
-
-
                 string txtQueryTinhThanh = "Select * from TinhThanh WHERE GCRecord IS NULL";
                 using (SqlCommand command = new SqlCommand(txtQueryTinhThanh, connection))
                 {
@@ -178,7 +179,7 @@ namespace ConvertDanhSachTinhThanh
                     }
                     catch (Exception ex)
                     {
-                        Console.WriteLine("❌ Error: " + ex.Message);
+                        throw new Exception("Error: " + ex.Message);
                     }
                 }
 
@@ -345,6 +346,7 @@ namespace ConvertDanhSachTinhThanh
                      "(SELECT TOP 1 TenXaPhuong FROM XaPhuong xp WHERE xp.Oid = dc.XaPhuong) AS XaPhuong, dc.SoNha " +
                      "FROM HoSo hs JOIN DiaChi dc ON hs.QueQuan = dc.Oid WHERE hs.GCRecord IS NULL AND ISNULL(dc.FullDiaChi,'') <>''";
                 }
+                txtQueryTinhThanh = BuildAddressQueryByType(comboBox1.Text);
                 using (SqlCommand command = new SqlCommand(txtQueryTinhThanh, connection))
                 {
                     try
@@ -373,11 +375,31 @@ namespace ConvertDanhSachTinhThanh
 
         }
 
+        private string BuildAddressQueryByType(string addressType)
+        {
+            string baseQuery = "SELECT hs.Oid AS ThongTinNhanVien_Oid , dc.FullDiaChi ," +
+                "(SELECT TOP 1 TenTinhThanh FROM TinhThanh tt WHERE tt.Oid = dc.TinhThanh) AS TinhThanh," +
+                "(SELECT TOP 1 TenQuanHuyen FROM QuanHuyen qh WHERE qh.Oid = dc.QuanHuyen) AS QuanHuyen," +
+                "(SELECT TOP 1 TenXaPhuong FROM XaPhuong xp WHERE xp.Oid = dc.XaPhuong) AS XaPhuong, dc.SoNha " +
+                "FROM HoSo hs JOIN DiaChi dc ON {0} WHERE hs.GCRecord IS NULL AND ISNULL(dc.FullDiaChi,'') <>''";
+
+            if (addressType == AppConstants.ADDRESS_TYPE_PERMANENT)
+                return string.Format(baseQuery, "hs.DiaChiThuongTru = dc.Oid");
+            else if (addressType == AppConstants.ADDRESS_TYPE_CURRENT)
+                return string.Format(baseQuery, "hs.NoiOHienNay = dc.Oid");
+            else if (addressType == AppConstants.ADDRESS_TYPE_BIRTH)
+                return string.Format(baseQuery, "hs.NoiSinh = dc.Oid");
+            else if (addressType == AppConstants.ADDRESS_TYPE_HOMETOWN)
+                return string.Format(baseQuery, "hs.QueQuan = dc.Oid");
+            else
+                return null;
+        }
+
         private string GetDanhSachXaPhuongCu(string tenQuanHuyenCu, string tenXaPhuongCu)
         {
-            tenQuanHuyenCu = tenQuanHuyenCu.Replace("Quận", "").Replace("Huyện", "").Replace("Thành phố", "").Replace("quận", "").Replace("huyện", "").Replace("Thành phố", "").Replace("thành phố", "").Replace("tp", "").Replace("Tp", "").Replace("TX", "").Replace("Thị xã", "").Replace("thị xã", "").Replace("TT","");
-            tenXaPhuongCu = tenXaPhuongCu.Replace("Phường", "").Replace("phường", "").Replace("Thị trấn", "").Replace("P.", "").Replace("p.", "").Replace(" ", "").Replace("TT", "").Replace("Xã", "").Replace("X", "").Replace("xã", "");
-            XaPhuongCu temp = listXaPhuongCu.Where(x => ChuanHoaChuoi(tenXaPhuongCu) == ChuanHoaChuoi(x.Ten) && TimRaDonViChaThongQuaMa(tenQuanHuyenCu,x.MaTenDonViCha)).FirstOrDefault();
+            tenQuanHuyenCu = StringNormalizer.NormalizeDistrictName(tenQuanHuyenCu);
+            tenXaPhuongCu = StringNormalizer.NormalizeWardName(tenXaPhuongCu).Replace(" ", "");
+            XaPhuongCu temp = listXaPhuongCu.Where(x => StringNormalizer.StandardizeString(tenXaPhuongCu) == StringNormalizer.StandardizeString(x.Ten) && TimRaDonViChaThongQuaMa(tenQuanHuyenCu, x.MaTenDonViCha)).FirstOrDefault();
             if (temp != null)
                 return temp.Ma;
             return tenXaPhuongCu;
@@ -390,8 +412,8 @@ namespace ConvertDanhSachTinhThanh
 
         private string GetDanhSachQuanHuyenCu(string tenTinhThanhCu, string tenQuanHuyenCu)
         {
-            tenQuanHuyenCu = tenQuanHuyenCu.Replace("Quận", "").Replace("Huyện", "").Replace("Thành phố", "").Replace("quận", "").Replace("huyện", "").Replace("Thành phố", "").Replace("thành phố", "").Replace("tp", "").Replace("Tp", "").Replace("TP", "").Replace("TX","").Replace("Thị xã","").Replace("thị xã","").Replace("TT","");
-            QuanHuyenCu temp = listQuanHuyenCu.Where(x => ChuanHoaChuoi(tenQuanHuyenCu) == ChuanHoaChuoi(x.Ten)  && GetNameTinhThanh(tenTinhThanhCu)  == x.TenDonViCha).FirstOrDefault();
+            tenQuanHuyenCu = StringNormalizer.NormalizeDistrictName(tenQuanHuyenCu);
+            QuanHuyenCu temp = listQuanHuyenCu.Where(x => StringNormalizer.StandardizeString(tenQuanHuyenCu) == StringNormalizer.StandardizeString(x.Ten) && GetNameTinhThanh(tenTinhThanhCu) == x.TenDonViCha).FirstOrDefault();
             if (temp != null)
                 return temp.Ma;
             return tenQuanHuyenCu;
@@ -399,8 +421,8 @@ namespace ConvertDanhSachTinhThanh
 
         private string GetCodeTinhThanh(string item)
         {
-            item = item.Replace("tỉnh", "").Replace("Tỉnh", "").Replace("Thành phố", "").Replace("thành phố", "").Replace("tp", "").Replace("Tp", "").Replace("TP", "");
-            TinhThanhCu temp = listTinhThanhCu.Where(x => ChuanHoaChuoi(item) == ChuanHoaChuoi(x.name)).FirstOrDefault();
+            item = StringNormalizer.NormalizeProvinceName(item);
+            TinhThanhCu temp = listTinhThanhCu.Where(x => StringNormalizer.StandardizeString(item) == StringNormalizer.StandardizeString(x.name)).FirstOrDefault();
             if (temp != null)
                 return temp.code;
             return item;
@@ -408,8 +430,8 @@ namespace ConvertDanhSachTinhThanh
 
         private string GetNamTinhThanh(string item)
         {
-            item = item.Replace("tỉnh", "").Replace("Tỉnh", "").Replace("Thành phố", "").Replace("thành phố", "").Replace("tp", "").Replace("TP", "");
-            TinhThanhCu temp = listTinhThanhCu.Where(x => ChuanHoaChuoi(item) == ChuanHoaChuoi(x.name)).FirstOrDefault();
+            item = StringNormalizer.NormalizeProvinceName(item);
+            TinhThanhCu temp = listTinhThanhCu.Where(x => StringNormalizer.StandardizeString(item) == StringNormalizer.StandardizeString(x.name)).FirstOrDefault();
             if (temp != null)
                 return temp.name;
             return null;
@@ -417,8 +439,8 @@ namespace ConvertDanhSachTinhThanh
 
         private string GetNameTinhThanh(string item)
         {
-            item = item.Replace("tỉnh", "").Replace("Tỉnh", "").Replace("Thành phố", "").Replace("thành phố", "").Replace("tp", "").Replace("TP", "");
-            TinhThanhCu temp = listTinhThanhCu.Where(x => ChuanHoaChuoi(item) == ChuanHoaChuoi(x.code)).FirstOrDefault();
+            item = StringNormalizer.NormalizeProvinceName(item);
+            TinhThanhCu temp = listTinhThanhCu.Where(x => StringNormalizer.StandardizeString(item) == StringNormalizer.StandardizeString(x.code)).FirstOrDefault();
             if (temp != null)
                 return temp.name;
             return null;
@@ -426,21 +448,7 @@ namespace ConvertDanhSachTinhThanh
 
         public string ChuanHoaChuoi(string input)
         {
-            // 1. Chuyển về chữ thường
-            string lower = input.ToLower();
-
-            // 2. Chuẩn hóa Unicode để tách dấu
-            string normalized = lower.Normalize(NormalizationForm.FormD);
-
-            // 3. Loại bỏ dấu bằng Regex
-            Regex regex = new Regex(@"\p{IsCombiningDiacriticalMarks}+");
-            string noDiacritics = regex.Replace(normalized, "")
-                                       .Replace('đ', 'd');
-
-            // 4. Loại bỏ khoảng trắng và ký tự đặc biệt
-            string cleaned = Regex.Replace(noDiacritics, @"[^a-z0-9]", "");
-            string item = cleaned.Replace(" ", "");
-            return item;
+            return StringNormalizer.StandardizeString(input);
         }
 
 
@@ -593,9 +601,7 @@ namespace ConvertDanhSachTinhThanh
 
         private async Task ConvertAddressAsync(string DiaChiCu, Guid HoSo)
         {
-
-
-            string oldAddress = ConvertNhungTinhThanhVietTat(DiaChiCu);
+            string oldAddress = StringNormalizer.ConvertVietnameseAbbreviations(DiaChiCu);
 
             DiaChiMoi dcm = new DiaChiMoi();
             dcm.HoSo = HoSo;
@@ -607,17 +613,12 @@ namespace ConvertDanhSachTinhThanh
 
             try
             {
-
-
-                var response = await client.PostAsync("https://production.cas.so/address-kit/convert", content);
+                var response = await client.PostAsync(AppConstants.API_ENDPOINT_CONVERT_ADDRESS, content);
                 response.EnsureSuccessStatusCode();
 
                 var responseResult = await response.Content.ReadAsStringAsync();
                 var apiResult = JsonConvert.DeserializeObject<ApiResponseDto>(responseResult);
 
-                //textBox1.Text = apiResult?.NewAddress != null
-                //    ? $"Địa chỉ mới: {apiResult.NewAddress.FullAddress}"
-                //    : "Không thể chuyển đổi địa chỉ.";
                 dcm.TinhThanhNew = GetTinhThanhNewWithTen(apiResult.NewAddress.Province);
                 dcm.XaPhuong_New = GetXaPhuongNewWithCode(apiResult.NewAddress.Code);
                 dcm.FullDiaChi = apiResult.NewAddress.FullAddress;
@@ -626,60 +627,44 @@ namespace ConvertDanhSachTinhThanh
             {
                 return;
             }
-
-        }
-
-
-        private string ConvertNhungTinhThanhVietTat(string DiaChiCu)
-        {
-            return DiaChiCu.Replace("TP.", "Thành phố Hồ Chí Minh");
         }
 
         private TinhThanh_New GetTinhThanhNewWithTen(string province)
         {
-            TinhThanh_New result = listTinhThanhNew_TonTai.Where(x => x.TenTinhThanh_New == province).FirstOrDefault();
-            if (result == null)
-            {
-                result = listTinhThanhNew.Where(item => item.TenTinhThanh_New == province).FirstOrDefault();
-                if (result != null)
-                {
-                    listTinhThanhNew_TonTai.Add(result);
-                }
-            }
-
-            return result;
+            return GetTinhThanhNew(x => x.TenTinhThanh_New == province);
         }
 
         private TinhThanh_New GetTinhThanhNewWithCode(string province)
         {
-            TinhThanh_New result = listTinhThanhNew_TonTai.Where(x => x.MaQuanLy == province).FirstOrDefault();
+            return GetTinhThanhNew(x => x.MaQuanLy == province);
+        }
+
+        private TinhThanh_New GetTinhThanhNew(Func<TinhThanh_New, bool> predicate)
+        {
+            TinhThanh_New result = listTinhThanhNew_TonTai.FirstOrDefault(predicate);
             if (result == null)
             {
-                result = listTinhThanhNew.Where(item => item.MaQuanLy == province).FirstOrDefault();
+                result = listTinhThanhNew.FirstOrDefault(predicate);
                 if (result != null)
                 {
                     listTinhThanhNew_TonTai.Add(result);
                 }
             }
-
             return result;
         }
 
         private XaPhuong_New GetXaPhuongNewWithCode(string Code)
         {
-
-            XaPhuong_New result = ListXaPhuongNew.Where(x => x.MaQuanLy == Code).FirstOrDefault();
+            XaPhuong_New result = ListXaPhuongNew_TonTai.FirstOrDefault(x => x.MaQuanLy == Code);
             if (result == null)
             {
-                result = ListXaPhuongNew.Where(item => item.MaQuanLy == Code).FirstOrDefault();
+                result = ListXaPhuongNew.FirstOrDefault(item => item.MaQuanLy == Code);
                 if (result != null)
                 {
                     ListXaPhuongNew_TonTai.Add(result);
                 }
             }
-
             return result;
-
         }
 
         private void button5_Click(object sender, EventArgs e)
@@ -757,20 +742,16 @@ namespace ConvertDanhSachTinhThanh
 
         private string GetXaPhuongNew(DiaChiMoi item)
         {
-            if (item == null)
-                return "NULL";
-            if (item.XaPhuong_New == null)
-                return "NULL";
-            return "'" + item.XaPhuong_New.Oid.ToString() + "'";
+            if (item?.XaPhuong_New?.Oid != null)
+                return $"'{item.XaPhuong_New.Oid}'";
+            return "NULL";
         }
 
         public string GetTinhThanhNew(DiaChiMoi item)
         {
-            if (item == null)
-                return "NULL";
-            if (item.TinhThanhNew == null)
-                return "NULL";
-            return "'" + item.TinhThanhNew.Oid.ToString() + "'";
+            if (item?.TinhThanhNew?.Oid != null)
+                return $"'{item.TinhThanhNew.Oid}'";
+            return "NULL";
         }
 
         private void button6_Click(object sender, EventArgs e)
@@ -878,28 +859,31 @@ namespace ConvertDanhSachTinhThanh
 
         private async Task ConvertAddressAsync_3Cap(DiaChiCu fullDiaChi, Guid hoSo)
         {
-
             DiaChiMoi dcm = new DiaChiMoi();
             dcm.HoSo = hoSo;
             DiaChiMoi_3Cap.Add(dcm);
 
-            var model = new RequesModel_3Cap { provinceCode = fullDiaChi.TenTinhThanhCu , districtCode = fullDiaChi.TenQuanHuyenCu , wardCode = fullDiaChi.TenXaPhuongCu ,streetAddress = fullDiaChi.SoNha };
+            var model = new RequesModel_3Cap
+            {
+                provinceCode = fullDiaChi.TenTinhThanhCu,
+                districtCode = fullDiaChi.TenQuanHuyenCu,
+                wardCode = fullDiaChi.TenXaPhuongCu,
+                streetAddress = fullDiaChi.SoNha
+            };
+
             var json = JsonConvert.SerializeObject(model);
             var content = new StringContent(json, Encoding.UTF8, "application/json");
 
             try
             {
                 System.Net.ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12;
-                client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", "hvn_u0bexhuCKIxin0sDBrbMe1Rf4d4m8a3c");
-                var response = await client.PostAsync("https://tinhthanhpho.com/api/v1/convert/address", content);
+                client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", AppConstants.API_AUTH_TOKEN);
+                var response = await client.PostAsync(AppConstants.API_ENDPOINT_CONVERT_3CAP, content);
                 response.EnsureSuccessStatusCode();
 
                 var responseResult = await response.Content.ReadAsStringAsync();
                 var apiResult = JsonConvert.DeserializeObject<Root>(responseResult);
 
-                //textBox1.Text = apiResult?.NewAddress != null
-                //    ? $"Địa chỉ mới: {apiResult.NewAddress.FullAddress}"
-                //    : "Không thể chuyển đổi địa chỉ.";
                 dcm.TinhThanhNew = GetTinhThanhNewWithCode(apiResult.data.@new.province.code);
                 dcm.XaPhuong_New = GetXaPhuongNewWithCode(apiResult.data.@new.ward.code);
                 dcm.FullDiaChi = apiResult.data.@new.fullAddress;
