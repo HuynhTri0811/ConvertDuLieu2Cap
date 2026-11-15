@@ -17,6 +17,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Compile Include="..\ConvertDanhSachTinhThanh\Helpers\StringNormalizer.cs" Link="Helpers\StringNormalizer.cs" />
+    <Compile Include="..\..\src\ConvertDanhSachTinhThanh\Helpers\StringNormalizer.cs" Link="Helpers\StringNormalizer.cs" />
   </ItemGroup>
 </Project>

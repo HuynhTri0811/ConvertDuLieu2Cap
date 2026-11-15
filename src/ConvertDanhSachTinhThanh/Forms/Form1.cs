@@ -48,7 +48,7 @@ namespace ConvertDanhSachTinhThanh
 
         private List<XaPhuongCu> GetXaPhuongCu()
         {
-            string debugPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "DanhSachCauTrucCu", "XaPhuongCu.xml");
+            string debugPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Data", "DanhSachCu", "XaPhuongCu.xml");
             string xml = File.ReadAllText(debugPath);
 
 
@@ -70,7 +70,7 @@ namespace ConvertDanhSachTinhThanh
 
         private List<TinhThanhCu> GetTinhThanhCu()
         {
-            string debugPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "DanhSachCauTrucCu", "DanhSachTinhThanhCu.xml");
+            string debugPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Data", "DanhSachCu", "DanhSachTinhThanhCu.xml");
             string xml = File.ReadAllText(debugPath);
 
 
@@ -84,7 +84,7 @@ namespace ConvertDanhSachTinhThanh
 
         private List<QuanHuyenCu> GetQuanHuyenCu()
         {
-            string debugPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "DanhSachCauTrucCu", "DanhSachQuanHuyenCu.xml");
+            string debugPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Data", "DanhSachCu", "DanhSachQuanHuyenCu.xml");
             string xml = File.ReadAllText(debugPath);
             XmlSerializer serializer = new XmlSerializer(typeof(ListQuanHuyenCu));
             using (StringReader reader = new StringReader(xml))

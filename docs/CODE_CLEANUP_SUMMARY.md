@@ -6,19 +6,39 @@
 
 Ứng dụng chính nhắm đến **.NET Framework 4.8**. `Form1` được chia thành các file `partial` theo trách nhiệm; khi biên dịch, các file này vẫn hợp thành cùng một lớp `Form1`. Vì vậy các control do Designer tạo, state dùng chung và event đã nối trong giao diện tiếp tục hoạt động như trước.
 
+## Cấu trúc thư mục
+
+```text
+ConvertDanhSachTinhThanh.sln
+src/ConvertDanhSachTinhThanh/        Ứng dụng WinForms (.NET Framework 4.8)
+├── Forms/                           Form1 (các file partial), AutoWaitForm
+├── Model/                           Model dữ liệu và DTO
+├── Helpers/                         Tiện ích chuẩn hóa chuỗi, dựng query
+├── Constants/                       Hằng số ứng dụng
+├── DataAccess/                      Truy cập SQL Server
+├── Data/DanhSachCu/                 XML danh mục hành chính cũ (3 cấp)
+├── Data/DanhSachMoi/                XML danh mục hành chính mới (2 cấp)
+├── Sql/                             Script stored procedure và view
+└── Properties/                      AssemblyInfo, Resources, Settings
+tests/ConvertDanhSachTinhThanh.Tests/ Unit test xUnit (.NET 10)
+docs/                                Tài liệu
+```
+
+File XML và SQL được copy vào thư mục output theo đúng cấu trúc trên (`Data/...`, `Sql/...`); code đọc chúng qua `Path.Combine(AppDomain.CurrentDomain.BaseDirectory, ...)`.
+
 ## Cấu trúc file
 
 | File | Vai trò |
 | --- | --- |
-| `ConvertDanhSachTinhThanh/Form1.cs` | Khai báo state chung, khởi tạo form, nạp các danh mục hành chính cũ từ XML và thêm lựa chọn loại địa chỉ vào ComboBox. |
-| `ConvertDanhSachTinhThanh/Form1.Database.cs` | Xử lý truy vấn SQL, nạp địa chỉ cũ, ánh xạ tên/mã hành chính, nạp danh mục mới và ghi kết quả vào cơ sở dữ liệu. |
-| `ConvertDanhSachTinhThanh/Form1.AddressConversion.cs` | Phân loại địa chỉ, gọi API chuyển đổi, tra cứu tỉnh/phường mới và ghép kết quả để hiển thị. |
-| `ConvertDanhSachTinhThanh/Form1.Designer.cs` | Mã giao diện được Windows Forms Designer sinh ra; khai báo control và gắn event handler. |
-| `ConvertDanhSachTinhThanh/Helpers/AddressQueryBuilder.cs` | Dựng câu SELECT theo loại địa chỉ được chọn. |
-| `ConvertDanhSachTinhThanh/Helpers/StringNormalizer.cs` | Chuẩn hóa tên hành chính và chuỗi tiếng Việt. |
-| `ConvertDanhSachTinhThanh/Constants/AppConstants.cs` | Hằng số cho loại địa chỉ, một số truy vấn SQL, endpoint, thông báo và batch size. |
-| `ConvertDanhSachTinhThanh/DataAccess/DatabaseHelper.cs` | Các hàm dùng chung để chạy query, non-query và stored procedure. Các event handler hiện tại trong `Form1` vẫn có một số đoạn thao tác SQL trực tiếp. |
-| `ConvertDanhSachTinhThanh/Model/` | Model dữ liệu địa chỉ, danh mục tỉnh/phường và DTO gửi/nhận API. |
+| `src/ConvertDanhSachTinhThanh/Forms/Form1.cs` | Khai báo state chung, khởi tạo form, nạp các danh mục hành chính cũ từ XML và thêm lựa chọn loại địa chỉ vào ComboBox. |
+| `src/ConvertDanhSachTinhThanh/Forms/Form1.Database.cs` | Xử lý truy vấn SQL, nạp địa chỉ cũ, ánh xạ tên/mã hành chính, nạp danh mục mới và ghi kết quả vào cơ sở dữ liệu. |
+| `src/ConvertDanhSachTinhThanh/Forms/Form1.AddressConversion.cs` | Phân loại địa chỉ, gọi API chuyển đổi, tra cứu tỉnh/phường mới và ghép kết quả để hiển thị. |
+| `src/ConvertDanhSachTinhThanh/Forms/Form1.Designer.cs` | Mã giao diện được Windows Forms Designer sinh ra; khai báo control và gắn event handler. |
+| `src/ConvertDanhSachTinhThanh/Helpers/AddressQueryBuilder.cs` | Dựng câu SELECT theo loại địa chỉ được chọn. |
+| `src/ConvertDanhSachTinhThanh/Helpers/StringNormalizer.cs` | Chuẩn hóa tên hành chính và chuỗi tiếng Việt. |
+| `src/ConvertDanhSachTinhThanh/Constants/AppConstants.cs` | Hằng số cho loại địa chỉ, một số truy vấn SQL, endpoint, thông báo và batch size. |
+| `src/ConvertDanhSachTinhThanh/DataAccess/DatabaseHelper.cs` | Các hàm dùng chung để chạy query, non-query và stored procedure. Các event handler hiện tại trong `Form1` vẫn có một số đoạn thao tác SQL trực tiếp. |
+| `src/ConvertDanhSachTinhThanh/Model/` | Model dữ liệu địa chỉ, danh mục tỉnh/phường và DTO gửi/nhận API. |
 | `ConvertDanhSachTinhThanh.Tests/` | Unit test hiện có cho `StringNormalizer`. |
 
 `Form1.Database.cs` và `Form1.AddressConversion.cs` được khai báo tường minh trong file project cũ `ConvertDanhSachTinhThanh.csproj`. Nếu thêm file `.cs` mới vào project này, cần thêm một mục `<Compile Include="..." />` tương ứng.
@@ -29,7 +49,7 @@ Các tên handler bên dưới được nối với control trong `Form1.Designe
 
 ### 1. Khởi tạo danh mục cũ
 
-Constructor của `Form1` nạp danh sách tỉnh, quận/huyện và xã/phường cũ từ thư mục `DanhSachCauTrucCu`. Các hàm nạp dùng `XmlSerializer`, sau đó chuyển `Items` thành danh sách để phục vụ đối chiếu trong lúc đọc địa chỉ.
+Constructor của `Form1` nạp danh sách tỉnh, quận/huyện và xã/phường cũ từ thư mục `Data/DanhSachCu`. Các hàm nạp dùng `XmlSerializer`, sau đó chuyển `Items` thành danh sách để phục vụ đối chiếu trong lúc đọc địa chỉ.
 
 Các lựa chọn trong ComboBox được lấy từ `AppConstants`:
 
@@ -63,8 +83,8 @@ Nút **Test** (`button7_Click`) chạy riêng luồng gọi API ba cấp trên d
 
 ### 4. Ghi danh mục và địa chỉ mới
 
-- Nút **Thêm mới danh sách tỉnh thành mới vào cơ sở dữ liệu** đọc `DanhSachTinhThanhMoi.xml`, chạy script SQL và gọi stored procedure chèn tỉnh thành.
-- Nút **Thêm mới danh sách xã phương mới vào cơ sở dữ liệu** đọc `DanhSachQuanHuyenMoi.xml`, chạy script và gọi stored procedure tương ứng.
+- Nút **Thêm mới danh sách tỉnh thành mới vào cơ sở dữ liệu** đọc `Data/DanhSachMoi/DanhSachTinhThanhMoi.xml`, chạy script SQL và gọi stored procedure chèn tỉnh thành.
+- Nút **Thêm mới danh sách xã phương mới vào cơ sở dữ liệu** đọc `Data/DanhSachMoi/DanhSachQuanHuyenMoi.xml`, chạy script và gọi stored procedure tương ứng.
 - Nút **Insert vào địa chỉ mới** chia `listDiaChiMoi` theo batch, tạo dữ liệu chèn và gọi stored procedure lưu địa chỉ.
 
 ## Helpers và model
@@ -115,7 +135,7 @@ Các thao tác SQL, event WinForms và gọi API chưa có unit test trong test 
 
 Để build ứng dụng WinForms, môi trường Windows cần có .NET Framework 4.8 Developer Pack/reference assemblies và các dependency được khai báo trong project.
 
-Môi trường macOS hiện tại không có reference assemblies của .NET Framework 4.8; vì vậy lệnh `dotnet build ConvertDanhSachTinhThanh/ConvertDanhSachTinhThanh.csproj` dừng ở lỗi `MSB3644`. Lỗi này xảy ra trước khi compiler kiểm tra đầy đủ mã nguồn ứng dụng. Test project .NET 10 là project riêng và không thay thế việc build ứng dụng WinForms trên Windows.
+Môi trường macOS hiện tại không có reference assemblies của .NET Framework 4.8; vì vậy lệnh `dotnet build src/ConvertDanhSachTinhThanh/ConvertDanhSachTinhThanh.csproj` dừng ở lỗi `MSB3644`. Lỗi này xảy ra trước khi compiler kiểm tra đầy đủ mã nguồn ứng dụng. Test project .NET 10 là project riêng và không thay thế việc build ứng dụng WinForms trên Windows.
 
 ## Nguyên tắc khi tiếp tục refactor
 

@@ -64,7 +64,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="Newtonsoft.Json, Version=13.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
-      <HintPath>..\packages\Newtonsoft.Json.13.0.3\lib\net45\Newtonsoft.Json.dll</HintPath>
+      <HintPath>..\..\packages\Newtonsoft.Json.13.0.3\lib\net45\Newtonsoft.Json.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="System" />
@@ -80,19 +80,19 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="AutoWaitForm.cs" />
+    <Compile Include="Forms\AutoWaitForm.cs" />
     <Compile Include="Constants\AppConstants.cs" />
     <Compile Include="DataAccess\DatabaseHelper.cs" />
     <Compile Include="Helpers\StringNormalizer.cs" />
     <Compile Include="Helpers\AddressQueryBuilder.cs" />
     <Compile Include="Model\DiaChiMoi.cs" />
     <Compile Include="Model\DiaChiCu.cs" />
-    <Compile Include="Form1.cs">
+    <Compile Include="Forms\Form1.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="Form1.Database.cs" />
-    <Compile Include="Form1.AddressConversion.cs" />
-    <Compile Include="Form1.Designer.cs">
+    <Compile Include="Forms\Form1.Database.cs" />
+    <Compile Include="Forms\Form1.AddressConversion.cs" />
+    <Compile Include="Forms\Form1.Designer.cs">
       <DependentUpon>Form1.cs</DependentUpon>
     </Compile>
     <Compile Include="Model\ListQuanHuyen.cs" />
@@ -106,14 +106,14 @@
     <Compile Include="Model\TinhThanhTrenCoSoDuLieu.cs" />
     <Compile Include="Model\XaPhuong_New.cs" />
     <Compile Include="Model\TinhThanh_New.cs" />
-    <Content Include="DanhSachCauTrucCu\DanhSachTinhThanhCu.xml">
+    <Content Include="Data\DanhSachCu\DanhSachTinhThanhCu.xml">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="DanhSachCauTrucCu\DanhSachQuanHuyenCu.xml">
+    <Content Include="Data\DanhSachCu\DanhSachQuanHuyenCu.xml">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
       <SubType>Designer</SubType>
     </Content>
-    <Content Include="DanhSachCauTrucCu\XaPhuongCu.xml">
+    <Content Include="Data\DanhSachCu\XaPhuongCu.xml">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="Sql\Sql_procedure_InsertXaPhuong.sql">
@@ -125,16 +125,7 @@
     <Content Include="Sql\Sql_procedure.sql">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="Sql_procedure.sql">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Sql_procedure_InsertTinhThanh.sql">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Sql_procedure_InsertXaPhuong.sql">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <EmbeddedResource Include="Form1.resx">
+    <EmbeddedResource Include="Forms\Form1.resx">
       <DependentUpon>Form1.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
@@ -147,14 +138,15 @@
       <DependentUpon>Resources.resx</DependentUpon>
       <DesignTime>True</DesignTime>
     </Compile>
-    <Content Include="DanhSachQuanHuyenMoi.xml">
+    <Content Include="Data\DanhSachMoi\DanhSachQuanHuyenMoi.xml">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="DanhSachTinhThanhMoi.xml">
+    <Content Include="Data\DanhSachMoi\DanhSachTinhThanhMoi.xml">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
       <SubType>Designer</SubType>
     </Content>
     <None Include="ConvertDanhSachTinhThanh_TemporaryKey.pfx" />
+    <None Include="Sql\View_DiaChi.sql" />
     <None Include="packages.config" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>

@@ -82,11 +82,11 @@ namespace ConvertDanhSachTinhThanh
                     throw new Exception("❌ Connection failed: " + ex.Message);
                 }
 
-                string script = File.ReadAllText(".\\Sql\\Sql_procedure_InsertTinhThanh.sql");
+                string script = File.ReadAllText(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Sql", "Sql_procedure_InsertTinhThanh.sql"));
                 var commandStrings = Regex.Split(script, @"^\s*GO\s*$", RegexOptions.Multiline | RegexOptions.IgnoreCase);
 
 
-                string debugPath = AppDomain.CurrentDomain.BaseDirectory + "DanhSachTinhThanhMoi.xml";
+                string debugPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Data", "DanhSachMoi", "DanhSachTinhThanhMoi.xml");
                 string xml = File.ReadAllText(debugPath);
 
                 XmlSerializer serializer = new XmlSerializer(typeof(LisstTinhThanh));
@@ -335,7 +335,7 @@ namespace ConvertDanhSachTinhThanh
             {
                 throw new Exception("Phải kết nối cơ sở dữ liệu trước");
             }
-            string script = File.ReadAllText("Sql_procedure.sql");
+            string script = File.ReadAllText(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Sql", "Sql_procedure.sql"));
 
 
             var commandStrings = Regex.Split(script, @"^\s*GO\s*$", RegexOptions.Multiline | RegexOptions.IgnoreCase);
@@ -433,11 +433,11 @@ namespace ConvertDanhSachTinhThanh
                     throw new Exception("❌ Connection failed: " + ex.Message);
                 }
 
-                string script = File.ReadAllText("Sql_procedure_InsertXaPhuong.sql");
+                string script = File.ReadAllText(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Sql", "Sql_procedure_InsertXaPhuong.sql"));
                 var commandStrings = Regex.Split(script, @"^\s*GO\s*$", RegexOptions.Multiline | RegexOptions.IgnoreCase);
 
 
-                string debugPath = AppDomain.CurrentDomain.BaseDirectory + "DanhSachQuanHuyenMoi.xml";
+                string debugPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Data", "DanhSachMoi", "DanhSachQuanHuyenMoi.xml");
                 string xml = File.ReadAllText(debugPath);
 
                 XmlSerializer serializer = new XmlSerializer(typeof(ListQuanHuyen));
