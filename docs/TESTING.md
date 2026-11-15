@@ -35,7 +35,7 @@ File mới trong `Helpers/` hoặc `Model/` tự động được đưa vào pro
 
 | File test | Kiểm tra |
 | --- | --- |
-| `StringNormalizerTests` | Bỏ tiền tố tỉnh/huyện/xã; giữ nguyên `null` và chuỗi rỗng; bỏ dấu và ký tự đặc biệt; thay `TP.`; hành vi khi truyền `null` cho hai hàm chuẩn hóa tổng quát. |
+| `StringNormalizerTests` | Bỏ tiền tố tỉnh/huyện/xã (tên bắt đầu bằng X như "Xuân La" được giữ nguyên); giữ nguyên `null` và chuỗi rỗng; bỏ dấu và ký tự đặc biệt; mở rộng `TP.`/`TP.HCM` đúng thành phố; hành vi khi truyền `null` cho hai hàm chuẩn hóa tổng quát. |
 | `AddressQueryBuilderTests` | Mỗi loại địa chỉ nối đúng cột của `HoSo`; phần SELECT và điều kiện lọc dùng chung; các loại khác nhau cho câu truy vấn khác nhau; loại không hợp lệ (kể cả sai hoa/thường hoặc chuỗi dạng SQL) trả về `null`. |
 | `CatalogXmlTests` | Đọc **file XML thật** bằng chính model và `XmlSerializer` như `Form1`; kiểm tra số bản ghi (63 / 707 / 10.599 / 34 / 3.321), bản ghi mẫu, mã không trùng, xã cũ trỏ tới mã huyện có thật, xã mới trỏ tới tỉnh mới có thật. |
 | `ApiDtoTests` | JSON gửi đi của `RequestModel` và `RequesModel_3Cap`; đọc phản hồi của cả hai API (`ApiResponseDto`, `Root` với thuộc tính `new`); phản hồi lỗi không có `data`. |
