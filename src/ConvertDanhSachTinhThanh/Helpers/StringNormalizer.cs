@@ -98,13 +98,29 @@ namespace ConvertDanhSachTinhThanh.Helpers
             return cleaned.Replace(" ", "");
         }
 
+        // "TP.HCM", "TP HCM", "Tp.HCM", "TPHCM"... (không phân biệt hoa/thường).
+        private static readonly Regex HoChiMinhAbbreviation = new Regex(@"\bTP\.?\s*HCM\b", RegexOptions.IgnoreCase);
+
+        // "TP." đứng cuối địa chỉ, không kèm tên: giữ cách hiểu cũ là TP. Hồ Chí Minh.
+        private static readonly Regex TrailingCityAbbreviation = new Regex(@"\bTP\.\s*$");
+
+        // "TP." theo sau là tên thành phố, ví dụ "TP. Hà Nội", "TP.Thủ Đức".
+        private static readonly Regex CityAbbreviation = new Regex(@"\bTP\.\s*(?=\w)");
+
         /// <summary>
-        /// Thay "TP." bằng "Thành phố Hồ Chí Minh" trước khi gửi địa chỉ cho API.
-        /// Giả định mọi "TP." là TP. Hồ Chí Minh; "TP. Hà Nội" sẽ bị đổi sai. Ném NullReferenceException nếu address là null.
+        /// Mở rộng viết tắt thành phố trước khi gửi địa chỉ cho API:
+        /// "TP.HCM" → "Thành phố Hồ Chí Minh"; "TP. Hà Nội" → "Thành phố Hà Nội";
+        /// "TP." đứng cuối, không kèm tên → "Thành phố Hồ Chí Minh".
+        /// Dạng "TP." chỉ nhận chữ hoa; dạng HCM nhận mọi kiểu hoa/thường. Ném NullReferenceException nếu address là null.
         /// </summary>
         public static string ConvertVietnameseAbbreviations(string address)
         {
-            return address.Replace("TP.", "Thành phố Hồ Chí Minh");
+            if (address.IndexOf("TP", StringComparison.OrdinalIgnoreCase) < 0)
+                return address;
+
+            string result = HoChiMinhAbbreviation.Replace(address, "Thành phố Hồ Chí Minh");
+            result = TrailingCityAbbreviation.Replace(result, "Thành phố Hồ Chí Minh");
+            return CityAbbreviation.Replace(result, "Thành phố ");
         }
     }
 }

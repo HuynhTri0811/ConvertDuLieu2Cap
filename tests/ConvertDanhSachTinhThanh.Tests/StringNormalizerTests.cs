@@ -100,10 +100,18 @@ public class StringNormalizerTests
     }
 
     [Theory]
-    [InlineData("TP. Hồ Chí Minh", "Thành phố Hồ Chí Minh Hồ Chí Minh")]
-    [InlineData("TP. Thủ Đức, TP. Hồ Chí Minh", "Thành phố Hồ Chí Minh Thủ Đức, Thành phố Hồ Chí Minh Hồ Chí Minh")]
+    [InlineData("TP. Hồ Chí Minh", "Thành phố Hồ Chí Minh")]
+    [InlineData("TP. Hà Nội", "Thành phố Hà Nội")]
+    [InlineData("12 Trần Phú, TP.Đà Nẵng", "12 Trần Phú, Thành phố Đà Nẵng")]
+    [InlineData("TP. Thủ Đức, TP. Hồ Chí Minh", "Thành phố Thủ Đức, Thành phố Hồ Chí Minh")]
+    [InlineData("12 Lê Lợi, Quận 1, TP.HCM", "12 Lê Lợi, Quận 1, Thành phố Hồ Chí Minh")]
+    [InlineData("12 Lê Lợi, Q.1, Tp HCM", "12 Lê Lợi, Q.1, Thành phố Hồ Chí Minh")]
+    [InlineData("12 Lê Lợi, Quận 1, TPHCM", "12 Lê Lợi, Quận 1, Thành phố Hồ Chí Minh")]
+    [InlineData("12 Lê Lợi, Quận 1, TP.", "12 Lê Lợi, Quận 1, Thành phố Hồ Chí Minh")]
     [InlineData("tp. Hồ Chí Minh", "tp. Hồ Chí Minh")]
-    public void ConvertVietnameseAbbreviations_ReplacesExactUppercaseAbbreviation(string input, string expected)
+    [InlineData("Thôn TPhú, Xã An Bình", "Thôn TPhú, Xã An Bình")]
+    [InlineData("Không có viết tắt", "Không có viết tắt")]
+    public void ConvertVietnameseAbbreviations_ExpandsCityAbbreviations(string input, string expected)
     {
         Assert.Equal(expected, StringNormalizer.ConvertVietnameseAbbreviations(input));
     }
