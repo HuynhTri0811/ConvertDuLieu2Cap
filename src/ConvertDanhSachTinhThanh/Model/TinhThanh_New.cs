@@ -6,6 +6,9 @@ using System.Threading.Tasks;
 
 namespace ConvertDanhSachTinhThanh
 {
+    /// <summary>
+    /// Một dòng của bảng TinhThanh_New (danh mục tỉnh mới đã nạp vào DB).
+    /// </summary>
     public class TinhThanh_New
     {
         public Guid Oid { get; set; }
@@ -25,6 +28,9 @@ namespace ConvertDanhSachTinhThanh
             this.TenTinhThanh_New = TenTinhThanh_New;
         }
 
+        /// <summary>
+        /// DataGridView hiển thị đối tượng bằng ToString, nên trả về tên tỉnh.
+        /// </summary>
         public override string ToString()
         {
             return TenTinhThanh_New;

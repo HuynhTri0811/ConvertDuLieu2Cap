@@ -6,6 +6,9 @@ using System.Threading.Tasks;
 
 namespace ConvertDanhSachTinhThanh
 {
+    /// <summary>
+    /// Một dòng của bảng TinhThanh cũ trong DB, nạp bởi nút "Convert Tỉnh Thành".
+    /// </summary>
     public class TinhThanhTrenCoSoDuLieu
     {
         public Guid Oid { get; set; }
