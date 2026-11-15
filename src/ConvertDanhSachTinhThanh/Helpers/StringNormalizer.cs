@@ -4,8 +4,16 @@ using System.Text.RegularExpressions;
 
 namespace ConvertDanhSachTinhThanh.Helpers
 {
+    /// <summary>
+    /// Chuẩn hóa tên đơn vị hành chính để so khớp tên trong DB với danh mục XML.
+    /// Các hàm Normalize... dùng string.Replace: xóa chuỗi con ở MỌI vị trí (không chỉ tiền tố)
+    /// và phân biệt hoa/thường. Kết quả thường còn dấu cách đầu; nơi gọi so sánh qua StandardizeString.
+    /// </summary>
     public static class StringNormalizer
     {
+        /// <summary>
+        /// Bỏ tiền tố tỉnh/thành phố ("Tỉnh", "Thành phố", "TP.", "tp", "Tp"). Giữ nguyên null và chuỗi rỗng.
+        /// </summary>
         public static string NormalizeProvinceName(string input)
         {
             if (string.IsNullOrEmpty(input))
@@ -21,6 +29,9 @@ namespace ConvertDanhSachTinhThanh.Helpers
             return result;
         }
 
+        /// <summary>
+        /// Bỏ tiền tố quận/huyện/thị xã/thành phố và viết tắt ("TP", "TX", "TT"). Giữ nguyên null và chuỗi rỗng.
+        /// </summary>
         public static string NormalizeDistrictName(string input)
         {
             if (string.IsNullOrEmpty(input))
@@ -43,6 +54,10 @@ namespace ConvertDanhSachTinhThanh.Helpers
             return result;
         }
 
+        /// <summary>
+        /// Bỏ tiền tố phường/xã/thị trấn và viết tắt ("P.", "TT"). Giữ nguyên null và chuỗi rỗng.
+        /// Lưu ý: Replace("X", "") xóa mọi chữ X hoa, nên "Xuân La" thành "uân La" và sẽ không khớp danh mục.
+        /// </summary>
         public static string NormalizeWardName(string input)
         {
             if (string.IsNullOrEmpty(input))
@@ -61,6 +76,10 @@ namespace ConvertDanhSachTinhThanh.Helpers
             return result;
         }
 
+        /// <summary>
+        /// Đưa chuỗi về dạng so sánh: chữ thường, bỏ dấu tiếng Việt, đổi đ → d, chỉ giữ a-z và 0-9.
+        /// Ví dụ "Đường Lê Lợi, P. Bến Nghé" → "duongleloipbennghe". Ném NullReferenceException nếu input là null.
+        /// </summary>
         public static string StandardizeString(string input)
         {
             // 1. Chuyển về chữ thường
@@ -79,6 +98,10 @@ namespace ConvertDanhSachTinhThanh.Helpers
             return cleaned.Replace(" ", "");
         }
 
+        /// <summary>
+        /// Thay "TP." bằng "Thành phố Hồ Chí Minh" trước khi gửi địa chỉ cho API.
+        /// Giả định mọi "TP." là TP. Hồ Chí Minh; "TP. Hà Nội" sẽ bị đổi sai. Ném NullReferenceException nếu address là null.
+        /// </summary>
         public static string ConvertVietnameseAbbreviations(string address)
         {
             return address.Replace("TP.", "Thành phố Hồ Chí Minh");
