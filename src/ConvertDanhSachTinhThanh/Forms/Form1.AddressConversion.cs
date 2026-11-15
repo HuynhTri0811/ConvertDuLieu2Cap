@@ -182,22 +182,30 @@ namespace ConvertDanhSachTinhThanh
         }
 
         /// <summary>
-        /// Nút "Test": chạy riêng luồng API 3 cấp cho toàn bộ listDiaChiCu, kể cả địa chỉ thiếu cấp.
-        /// Lưu ý: kết quả được thêm vào DiaChiMoi_3Cap nhưng lưới lại hiển thị listDiaChiMoi,
-        /// nên không thấy kết quả của lần chạy này.
+        /// Nút "Test": chạy riêng luồng API 3 cấp cho toàn bộ listDiaChiCu, kể cả địa chỉ thiếu cấp,
+        /// rồi hiển thị kết quả ở dataGridView2. Giống nút chuyển đổi chính, kết quả trở thành listDiaChiMoi
+        /// nên nút "Insert vào địa chỉ mới" sẽ ghi đúng những gì đang hiển thị.
         /// </summary>
         private async void button7_Click(object sender, EventArgs e)
         {
+            dataGridView2.DataSource = null;
+            dataGridView2.Refresh();
+
             listTinhThanhNew = GetDanhSachTinhThanhNew();
             ListXaPhuongNew = GetDanhSachXaPhuongNew();
             listTinhThanhNew_TonTai = new List<TinhThanh_New>();
             ListXaPhuongNew_TonTai = new List<XaPhuong_New>();
 
+            // ConvertAddressAsync_3Cap thêm kết quả vào DiaChiMoi_3Cap; làm mới để không lẫn kết quả lần chạy trước.
+            DiaChiMoi_3Cap = new List<DiaChiMoi>();
+
             foreach (var x in listDiaChiCu)
             {
                 await ConvertAddressAsync_3Cap(x, x.HoSo);
             }
-            dataGridView2.DataSource = listDiaChiMoi;
+
+            listDiaChiMoi = DiaChiMoi_3Cap;
+            dataGridView2.DataSource = new BindingList<DiaChiMoi>(listDiaChiMoi);
         }
 
         /// <summary>
