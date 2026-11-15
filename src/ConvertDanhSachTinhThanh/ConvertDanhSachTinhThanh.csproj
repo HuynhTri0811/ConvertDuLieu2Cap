@@ -106,14 +106,14 @@
     <Compile Include="Model\TinhThanhTrenCoSoDuLieu.cs" />
     <Compile Include="Model\XaPhuong_New.cs" />
     <Compile Include="Model\TinhThanh_New.cs" />
-    <Content Include="DanhSachCauTrucCu\DanhSachTinhThanhCu.xml">
+    <Content Include="Data\DanhSachCu\DanhSachTinhThanhCu.xml">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="DanhSachCauTrucCu\DanhSachQuanHuyenCu.xml">
+    <Content Include="Data\DanhSachCu\DanhSachQuanHuyenCu.xml">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
       <SubType>Designer</SubType>
     </Content>
-    <Content Include="DanhSachCauTrucCu\XaPhuongCu.xml">
+    <Content Include="Data\DanhSachCu\XaPhuongCu.xml">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="Sql\Sql_procedure_InsertXaPhuong.sql">
@@ -147,10 +147,10 @@
       <DependentUpon>Resources.resx</DependentUpon>
       <DesignTime>True</DesignTime>
     </Compile>
-    <Content Include="DanhSachQuanHuyenMoi.xml">
+    <Content Include="Data\DanhSachMoi\DanhSachQuanHuyenMoi.xml">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="DanhSachTinhThanhMoi.xml">
+    <Content Include="Data\DanhSachMoi\DanhSachTinhThanhMoi.xml">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
       <SubType>Designer</SubType>
     </Content>

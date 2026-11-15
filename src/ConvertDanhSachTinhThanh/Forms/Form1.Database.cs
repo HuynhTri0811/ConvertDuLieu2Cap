@@ -86,7 +86,7 @@ namespace ConvertDanhSachTinhThanh
                 var commandStrings = Regex.Split(script, @"^\s*GO\s*$", RegexOptions.Multiline | RegexOptions.IgnoreCase);
 
 
-                string debugPath = AppDomain.CurrentDomain.BaseDirectory + "DanhSachTinhThanhMoi.xml";
+                string debugPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Data", "DanhSachMoi", "DanhSachTinhThanhMoi.xml");
                 string xml = File.ReadAllText(debugPath);
 
                 XmlSerializer serializer = new XmlSerializer(typeof(LisstTinhThanh));
@@ -437,7 +437,7 @@ namespace ConvertDanhSachTinhThanh
                 var commandStrings = Regex.Split(script, @"^\s*GO\s*$", RegexOptions.Multiline | RegexOptions.IgnoreCase);
 
 
-                string debugPath = AppDomain.CurrentDomain.BaseDirectory + "DanhSachQuanHuyenMoi.xml";
+                string debugPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Data", "DanhSachMoi", "DanhSachQuanHuyenMoi.xml");
                 string xml = File.ReadAllText(debugPath);
 
                 XmlSerializer serializer = new XmlSerializer(typeof(ListQuanHuyen));
