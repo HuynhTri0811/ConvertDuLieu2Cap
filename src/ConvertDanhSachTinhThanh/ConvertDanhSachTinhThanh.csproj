@@ -80,19 +80,19 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="AutoWaitForm.cs" />
+    <Compile Include="Forms\AutoWaitForm.cs" />
     <Compile Include="Constants\AppConstants.cs" />
     <Compile Include="DataAccess\DatabaseHelper.cs" />
     <Compile Include="Helpers\StringNormalizer.cs" />
     <Compile Include="Helpers\AddressQueryBuilder.cs" />
     <Compile Include="Model\DiaChiMoi.cs" />
     <Compile Include="Model\DiaChiCu.cs" />
-    <Compile Include="Form1.cs">
+    <Compile Include="Forms\Form1.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="Form1.Database.cs" />
-    <Compile Include="Form1.AddressConversion.cs" />
-    <Compile Include="Form1.Designer.cs">
+    <Compile Include="Forms\Form1.Database.cs" />
+    <Compile Include="Forms\Form1.AddressConversion.cs" />
+    <Compile Include="Forms\Form1.Designer.cs">
       <DependentUpon>Form1.cs</DependentUpon>
     </Compile>
     <Compile Include="Model\ListQuanHuyen.cs" />
@@ -134,7 +134,7 @@
     <Content Include="Sql_procedure_InsertXaPhuong.sql">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <EmbeddedResource Include="Form1.resx">
+    <EmbeddedResource Include="Forms\Form1.resx">
       <DependentUpon>Form1.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
