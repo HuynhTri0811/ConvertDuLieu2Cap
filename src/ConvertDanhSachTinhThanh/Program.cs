@@ -6,6 +6,9 @@ using System.Windows.Forms;
 
 namespace ConvertDanhSachTinhThanh
 {
+    /// <summary>
+    /// Điểm vào của ứng dụng: mở màn hình chính Form1.
+    /// </summary>
     static class Program
     {
         /// <summary>

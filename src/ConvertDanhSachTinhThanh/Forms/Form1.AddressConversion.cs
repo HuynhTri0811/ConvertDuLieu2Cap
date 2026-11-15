@@ -14,8 +14,15 @@ using ConvertDanhSachTinhThanh.Helpers;
 
 namespace ConvertDanhSachTinhThanh
 {
+    /// <summary>
+    /// Phần Form1 chuyển địa chỉ cũ sang địa chỉ mới qua hai API và tra kết quả trong danh mục mới.
+    /// </summary>
     public partial class Form1
     {
+        /// <summary>
+        /// Nút "ConverDiaChiCuThanhDiaChiMoi": chuyển toàn bộ listDiaChiCu, gom kết quả vào listDiaChiMoi
+        /// và hiển thị ở dataGridView2.
+        /// </summary>
         private async void button4_Click(object sender, EventArgs e)
         {
             dataGridView2.DataSource = null;
@@ -31,6 +38,7 @@ namespace ConvertDanhSachTinhThanh
             ListXaPhuongNew_TonTai = new List<XaPhuong_New>();
 
 
+            // Đủ 3 cấp → API 3 cấp theo mã; thiếu cấp → API nhận chuỗi địa chỉ đầy đủ.
             foreach(var x in listDiaChiCu)
             {
                 if (string.IsNullOrEmpty(x.TenXaPhuongCu) == false && string.IsNullOrEmpty(x.TenQuanHuyenCu) == false && string.IsNullOrEmpty(x.TenTinhThanhCu) == false)
@@ -39,6 +47,7 @@ namespace ConvertDanhSachTinhThanh
                     listDanhSachDiaChiCuCoDiaChi.Add(x);
             }
 
+                // Hai nhóm chạy song song; trong mỗi nhóm các request được gửi tuần tự.
                 Task task1 = XuLyList3Cap(listDanhSachDiaChiCuCo3Cap, "List 1");
                 Task task2 = XuLyListFull(listDanhSachDiaChiCuCoDiaChi, "List 2");
 
@@ -63,6 +72,9 @@ namespace ConvertDanhSachTinhThanh
             dataGridView2.DataSource = items;
         }
 
+        /// <summary>
+        /// Gửi lần lượt từng địa chỉ đủ 3 cấp tới API 3 cấp. Tham số v (nhãn nhóm) hiện không dùng.
+        /// </summary>
         private async Task XuLyList3Cap(List<DiaChiCu> listDanhSachDiaChiCuCo3Cap, string v)
         {
             foreach (var x in listDanhSachDiaChiCuCo3Cap)
@@ -71,6 +83,9 @@ namespace ConvertDanhSachTinhThanh
             }
         }
 
+        /// <summary>
+        /// Gửi lần lượt từng địa chỉ thiếu cấp tới API địa chỉ đầy đủ. Tham số v (nhãn nhóm) hiện không dùng.
+        /// </summary>
         private async Task XuLyListFull(List<DiaChiCu> listDanhSachDiaChiCuCo3Cap, string v)
         {
             foreach (var x in listDanhSachDiaChiCuCo3Cap)
@@ -79,12 +94,17 @@ namespace ConvertDanhSachTinhThanh
             }
         }
 
+        /// <summary>
+        /// Chuyển một chuỗi địa chỉ đầy đủ qua API_ENDPOINT_CONVERT_ADDRESS. Tỉnh mới được tra theo TÊN,
+        /// xã mới theo MÃ trong phản hồi.
+        /// </summary>
         private async Task ConvertAddressAsync(string DiaChiCu, Guid HoSo)
         {
             string oldAddress = StringNormalizer.ConvertVietnameseAbbreviations(DiaChiCu);
 
             DiaChiMoi dcm = new DiaChiMoi();
             dcm.HoSo = HoSo;
+            // Thêm vào danh sách trước khi gọi API: nếu API lỗi, bản ghi vẫn có nhưng thiếu tỉnh/xã mới.
             DiaChiMoi_DiaChiFull.Add(dcm);
 
             var model = new RequestModel { oldAddress = oldAddress };
@@ -103,22 +123,33 @@ namespace ConvertDanhSachTinhThanh
                 dcm.XaPhuong_New = GetXaPhuongNewWithCode(apiResult.NewAddress.Code);
                 dcm.FullDiaChi = apiResult.NewAddress.FullAddress;
             }
+            // Lỗi API bị bỏ qua, người dùng không thấy lý do (docs/KNOWN_ISSUES.md).
             catch (Exception ex)
             {
                 return;
             }
         }
 
+        /// <summary>
+        /// Tra tỉnh mới theo tên đầy đủ (ví dụ "Thành phố Hồ Chí Minh"), so khớp chính xác.
+        /// </summary>
         private TinhThanh_New GetTinhThanhNewWithTen(string province)
         {
             return GetTinhThanhNew(x => x.TenTinhThanh_New == province);
         }
 
+        /// <summary>
+        /// Tra tỉnh mới theo mã quản lý (ví dụ "79").
+        /// </summary>
         private TinhThanh_New GetTinhThanhNewWithCode(string province)
         {
             return GetTinhThanhNew(x => x.MaQuanLy == province);
         }
 
+        /// <summary>
+        /// Tìm tỉnh mới trong cache listTinhThanhNew_TonTai trước, rồi mới tới listTinhThanhNew;
+        /// tìm thấy thì thêm vào cache. Trả về null nếu không có.
+        /// </summary>
         private TinhThanh_New GetTinhThanhNew(Func<TinhThanh_New, bool> predicate)
         {
             TinhThanh_New result = listTinhThanhNew_TonTai.FirstOrDefault(predicate);
@@ -133,6 +164,9 @@ namespace ConvertDanhSachTinhThanh
             return result;
         }
 
+        /// <summary>
+        /// Tra xã/phường mới theo mã quản lý, có cache giống GetTinhThanhNew. Trả về null nếu không có.
+        /// </summary>
         private XaPhuong_New GetXaPhuongNewWithCode(string Code)
         {
             XaPhuong_New result = ListXaPhuongNew_TonTai.FirstOrDefault(x => x.MaQuanLy == Code);
@@ -147,6 +181,11 @@ namespace ConvertDanhSachTinhThanh
             return result;
         }
 
+        /// <summary>
+        /// Nút "Test": chạy riêng luồng API 3 cấp cho toàn bộ listDiaChiCu, kể cả địa chỉ thiếu cấp.
+        /// Lưu ý: kết quả được thêm vào DiaChiMoi_3Cap nhưng lưới lại hiển thị listDiaChiMoi,
+        /// nên không thấy kết quả của lần chạy này.
+        /// </summary>
         private async void button7_Click(object sender, EventArgs e)
         {
             listTinhThanhNew = GetDanhSachTinhThanhNew();
@@ -161,10 +200,15 @@ namespace ConvertDanhSachTinhThanh
             dataGridView2.DataSource = listDiaChiMoi;
         }
 
+        /// <summary>
+        /// Chuyển một địa chỉ qua API_ENDPOINT_CONVERT_3CAP bằng mã tỉnh/huyện/xã cũ.
+        /// Các trường Ten...Cu lúc này đang chứa MÃ (đã đổi ở bước nạp địa chỉ cũ). Tỉnh và xã mới được tra theo mã.
+        /// </summary>
         private async Task ConvertAddressAsync_3Cap(DiaChiCu fullDiaChi, Guid hoSo)
         {
             DiaChiMoi dcm = new DiaChiMoi();
             dcm.HoSo = hoSo;
+            // Thêm vào danh sách trước khi gọi API: nếu API lỗi, bản ghi vẫn có nhưng thiếu tỉnh/xã mới.
             DiaChiMoi_3Cap.Add(dcm);
 
             var model = new RequesModel_3Cap
@@ -180,6 +224,8 @@ namespace ConvertDanhSachTinhThanh
 
             try
             {
+                // .NET Framework 4.x có thể chưa bật TLS 1.2 mặc định. Header Authorization được gán lại
+                // trước mỗi request trên HttpClient dùng chung.
                 System.Net.ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12;
                 client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", AppConstants.API_AUTH_TOKEN);
                 var response = await client.PostAsync(AppConstants.API_ENDPOINT_CONVERT_3CAP, content);
@@ -192,6 +238,7 @@ namespace ConvertDanhSachTinhThanh
                 dcm.XaPhuong_New = GetXaPhuongNewWithCode(apiResult.data.@new.ward.code);
                 dcm.FullDiaChi = apiResult.data.@new.fullAddress;
             }
+            // Lỗi API bị bỏ qua, người dùng không thấy lý do (docs/KNOWN_ISSUES.md).
             catch (Exception ex)
             {
                 return;
