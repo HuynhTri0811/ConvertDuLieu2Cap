@@ -1,145 +1,113 @@
-# Tài liệu cấu trúc và refactor
+# Kiến trúc và luồng xử lý
 
 ## Tổng quan
 
-Ứng dụng chuyển đổi danh mục và địa chỉ hành chính cũ sang danh mục mới. Giao diện được xây bằng Windows Forms, đọc dữ liệu danh mục từ XML, truy xuất hồ sơ từ SQL Server và gửi địa chỉ đến API chuyển đổi.
+`ConvertDanhSachTinhThanh` là ứng dụng Windows Forms một màn hình, viết cho **.NET Framework 4.8**. Ứng dụng có ba nguồn dữ liệu:
 
-Ứng dụng chính nhắm đến **.NET Framework 4.8**. `Form1` được chia thành các file `partial` theo trách nhiệm; khi biên dịch, các file này vẫn hợp thành cùng một lớp `Form1`. Vì vậy các control do Designer tạo, state dùng chung và event đã nối trong giao diện tiếp tục hoạt động như trước.
-
-## Cấu trúc thư mục
+- **XML danh mục** đi kèm ứng dụng (`Data/`), gồm danh mục cũ để đối chiếu và danh mục mới để nạp vào cơ sở dữ liệu.
+- **SQL Server**, nơi chứa hồ sơ, địa chỉ cũ và các bảng danh mục/địa chỉ mới. Chuỗi kết nối được nhập trên giao diện.
+- **Hai API chuyển đổi địa chỉ** bên ngoài (endpoint khai báo trong `AppConstants`).
 
 ```text
-ConvertDanhSachTinhThanh.sln
-src/ConvertDanhSachTinhThanh/        Ứng dụng WinForms (.NET Framework 4.8)
-├── Forms/                           Form1 (các file partial), AutoWaitForm
-├── Model/                           Model dữ liệu và DTO
-├── Helpers/                         Tiện ích chuẩn hóa chuỗi, dựng query
-├── Constants/                       Hằng số ứng dụng
-├── DataAccess/                      Truy cập SQL Server
-├── Data/DanhSachCu/                 XML danh mục hành chính cũ (3 cấp)
-├── Data/DanhSachMoi/                XML danh mục hành chính mới (2 cấp)
-├── Sql/                             Script stored procedure và view
-└── Properties/                      AssemblyInfo, Resources, Settings
-tests/ConvertDanhSachTinhThanh.Tests/ Unit test xUnit (.NET 10)
-docs/                                Tài liệu
+           XML danh mục cũ ──┐
+                             ▼
+SQL Server (HoSo, DiaChi) ─► Form1 ──► API chuyển đổi ──► Form1 ──► SQL Server (DiaChi_New, HoSo.*_New)
+                             ▲                               ▲
+           XML danh mục mới ─┴─► SQL Server (TinhThanh_New, XaPhuong_New)
 ```
 
-File XML và SQL được copy vào thư mục output theo đúng cấu trúc trên (`Data/...`, `Sql/...`); code đọc chúng qua `Path.Combine(AppDomain.CurrentDomain.BaseDirectory, ...)`.
+## Thành phần
 
-## Cấu trúc file
-
-| File | Vai trò |
+| Thư mục / file | Vai trò |
 | --- | --- |
-| `src/ConvertDanhSachTinhThanh/Forms/Form1.cs` | Khai báo state chung, khởi tạo form, nạp các danh mục hành chính cũ từ XML và thêm lựa chọn loại địa chỉ vào ComboBox. |
-| `src/ConvertDanhSachTinhThanh/Forms/Form1.Database.cs` | Xử lý truy vấn SQL, nạp địa chỉ cũ, ánh xạ tên/mã hành chính, nạp danh mục mới và ghi kết quả vào cơ sở dữ liệu. |
-| `src/ConvertDanhSachTinhThanh/Forms/Form1.AddressConversion.cs` | Phân loại địa chỉ, gọi API chuyển đổi, tra cứu tỉnh/phường mới và ghép kết quả để hiển thị. |
-| `src/ConvertDanhSachTinhThanh/Forms/Form1.Designer.cs` | Mã giao diện được Windows Forms Designer sinh ra; khai báo control và gắn event handler. |
-| `src/ConvertDanhSachTinhThanh/Helpers/AddressQueryBuilder.cs` | Dựng câu SELECT theo loại địa chỉ được chọn. |
-| `src/ConvertDanhSachTinhThanh/Helpers/StringNormalizer.cs` | Chuẩn hóa tên hành chính và chuỗi tiếng Việt. |
-| `src/ConvertDanhSachTinhThanh/Constants/AppConstants.cs` | Hằng số cho loại địa chỉ, một số truy vấn SQL, endpoint, thông báo và batch size. |
-| `src/ConvertDanhSachTinhThanh/DataAccess/DatabaseHelper.cs` | Các hàm dùng chung để chạy query, non-query và stored procedure. Các event handler hiện tại trong `Form1` vẫn có một số đoạn thao tác SQL trực tiếp. |
-| `src/ConvertDanhSachTinhThanh/Model/` | Model dữ liệu địa chỉ, danh mục tỉnh/phường và DTO gửi/nhận API. |
-| `ConvertDanhSachTinhThanh.Tests/` | Unit test hiện có cho `StringNormalizer`. |
+| `Program.cs` | Điểm vào, khởi chạy `Form1`. |
+| `Forms/Form1.cs` | State dùng chung của form; constructor nạp ba danh mục cũ từ XML và điền ComboBox loại địa chỉ. |
+| `Forms/Form1.Database.cs` | Các thao tác với SQL Server: nạp địa chỉ cũ, ánh xạ tên sang mã hành chính cũ, nạp danh mục mới, chạy script SQL và stored procedure. |
+| `Forms/Form1.AddressConversion.cs` | Phân loại địa chỉ, gọi hai API chuyển đổi, tra cứu tỉnh/xã mới theo kết quả trả về. |
+| `Forms/Form1.Designer.cs`, `Form1.resx` | Giao diện do Designer sinh ra; nối event handler. |
+| `Forms/AutoWaitForm.cs` | Form chờ (hiện chưa có logic). |
+| `Helpers/AddressQueryBuilder.cs` | Dựng câu SELECT địa chỉ cũ theo loại địa chỉ được chọn. |
+| `Helpers/StringNormalizer.cs` | Bỏ tiền tố hành chính, bỏ dấu tiếng Việt, chuẩn hóa chuỗi để so sánh. |
+| `Constants/AppConstants.cs` | Loại địa chỉ, câu truy vấn danh mục mới, endpoint API, thông báo, batch size. |
+| `DataAccess/DatabaseHelper.cs` | Hàm dùng chung cho query, non-query và stored procedure. `Form1` hiện chưa dùng lớp này mà vẫn tự mở `SqlConnection`. |
+| `Model/` | Model ánh xạ XML danh mục, model địa chỉ cũ/mới và DTO request/response của API. |
 
-`Form1.Database.cs` và `Form1.AddressConversion.cs` được khai báo tường minh trong file project cũ `ConvertDanhSachTinhThanh.csproj`. Nếu thêm file `.cs` mới vào project này, cần thêm một mục `<Compile Include="..." />` tương ứng.
+`Form1` là lớp `partial`. Các file trong `Forms/` được biên dịch thành cùng một lớp, nên control, state và event handler dùng chung với nhau.
 
-## Luồng xử lý trên giao diện
+`ConvertDanhSachTinhThanh.csproj` là project kiểu cũ và không tự động thêm file. Khi thêm file `.cs`, `.xml` hay `.sql`, cần khai báo thêm `<Compile Include>` hoặc `<Content Include>` tương ứng. File XML và SQL đặt `CopyToOutputDirectory=Always` để có mặt trong `bin/<Config>/Data/...` và `bin/<Config>/Sql/...`. Code đọc chúng qua `Path.Combine(AppDomain.CurrentDomain.BaseDirectory, ...)`.
 
-Các tên handler bên dưới được nối với control trong `Form1.Designer.cs`.
+## Các nút trên giao diện
 
-### 1. Khởi tạo danh mục cũ
+| Nút (text hiển thị) | Handler | File |
+| --- | --- | --- |
+| Kiểm tra kết nối | Chưa nối handler | — |
+| Convert Tỉnh Thành | `button2_Click` | `Form1.Database.cs` |
+| Thêm mới danh sách tỉnh thành mới vào cơ sở dữ liệu | `button3_Click` | `Form1.Database.cs` |
+| Thêm mới danh sách xã phương mới vào cơ sở dữ liệu | `button6_Click` | `Form1.Database.cs` |
+| Load danh sách địa chỉ cũ | `LoadDanhSachDiaChiCuTuTrongCoSoDuLieu_Click` | `Form1.Database.cs` |
+| ConverDiaChiCuThanhDiaChiMoi | `button4_Click` | `Form1.AddressConversion.cs` |
+| Test | `button7_Click` | `Form1.AddressConversion.cs` |
+| Insert vào địa chỉ mới | `button5_Click` | `Form1.Database.cs` |
 
-Constructor của `Form1` nạp danh sách tỉnh, quận/huyện và xã/phường cũ từ thư mục `Data/DanhSachCu`. Các hàm nạp dùng `XmlSerializer`, sau đó chuyển `Items` thành danh sách để phục vụ đối chiếu trong lúc đọc địa chỉ.
+**Convert Tỉnh Thành** chỉ đọc bảng `TinhThanh` cũ trong cơ sở dữ liệu vào `listTinhThanh_CoTrenCoSoDuLieu`. Danh sách này hiện chưa được bước nào khác sử dụng.
 
-Các lựa chọn trong ComboBox được lấy từ `AppConstants`:
+## Quy trình sử dụng
 
-- Địa chỉ thường trú
-- Nơi ở hiện nay
-- Nơi sinh
-- Quê quán
+Thứ tự thao tác thông thường:
 
-### 2. Nạp địa chỉ cũ
+### Bước 0: Khởi động
 
-Nút **Load danh sách địa chỉ cũ** gọi `LoadDanhSachDiaChiCuTuTrongCoSoDuLieu_Click` trong `Form1.Database.cs`:
+Constructor của `Form1` đọc ba file `Data/DanhSachCu/*.xml` bằng `XmlSerializer` (xem [DATA_AND_SQL.md](DATA_AND_SQL.md)). ComboBox được điền bốn loại địa chỉ từ `AppConstants`: *Địa chỉ thường trú*, *Nơi ở hiện nay*, *Nơi sinh*, *Quê quán*.
 
-1. Kiểm tra loại địa chỉ và chuỗi kết nối.
-2. Gọi `AddressQueryBuilder.Build` để tạo câu truy vấn phù hợp với lựa chọn.
-3. Đọc hồ sơ và địa chỉ từ SQL Server.
-4. Đối chiếu tên tỉnh, quận/huyện, xã/phường với danh mục cũ; chuẩn hóa chuỗi trước khi so sánh.
-5. Đưa kết quả vào `listDiaChiCu` và hiển thị trên `dataGridView1`.
+Nếu thiếu một file XML, ứng dụng sẽ lỗi ngay khi mở.
 
-Nếu loại địa chỉ không được hỗ trợ, `Build` trả về `null` và handler báo lỗi trước khi chạy truy vấn.
+### Bước 1: Nạp danh mục mới vào cơ sở dữ liệu (làm một lần)
 
-### 3. Chuyển đổi địa chỉ
+1. **Thêm mới danh sách tỉnh thành mới**: đọc `DanhSachTinhThanhMoi.xml`, chạy `Sql/Sql_procedure_InsertTinhThanh.sql` (tách theo `GO`) để tạo `spd_InsertTinhThanhMoi`. Sau đó gọi procedure với một chuỗi `SELECT ... UNION ALL ...` chứa mã và tên tỉnh.
+2. **Thêm mới danh sách xã phường mới**: tương tự, với `DanhSachQuanHuyenMoi.xml` và `spd_InsertXaPhuongMoi`.
 
-Nút **ConverDiaChiCuThanhDiaChiMoi** gọi `button4_Click` trong `Form1.AddressConversion.cs`. Handler chia dữ liệu thành hai nhóm:
+Cả hai procedure chỉ chèn những mã chưa có, nên chạy lại không tạo bản ghi trùng.
 
-- Địa chỉ có đủ tỉnh, quận/huyện và xã/phường: gửi mã ba cấp đến API ba cấp.
-- Địa chỉ thiếu một trong các cấp: gửi chuỗi địa chỉ đầy đủ đến API chuyển đổi địa chỉ.
+### Bước 2: Nạp địa chỉ cũ
 
-Kết quả API được chuyển thành `DiaChiMoi`. Mã tỉnh và phường trả về được tìm trong danh mục mới; kết quả được gom vào `listDiaChiMoi` và hiển thị trên `dataGridView2`.
+**Load danh sách địa chỉ cũ** (`LoadDanhSachDiaChiCuTuTrongCoSoDuLieu_Click`):
 
-Nút **Test** (`button7_Click`) chạy riêng luồng gọi API ba cấp trên danh sách hiện tại. Nó được giữ theo event hiện có trong giao diện.
+1. Kiểm tra đã chọn loại địa chỉ và đã nhập chuỗi kết nối.
+2. `AddressQueryBuilder.Build(loại)` trả về câu SELECT nối `HoSo` với `DiaChi` theo đúng cột (`DiaChiThuongTru`, `NoiOHienNay`, `NoiSinh`, `QueQuan`). Loại không hợp lệ trả về `null`, khi đó handler báo lỗi.
+3. Với mỗi dòng, ánh xạ tên tỉnh, huyện, xã cũ sang **mã** trong danh mục cũ:
+   - tỉnh: so khớp tên đã chuẩn hóa với `DanhSachTinhThanhCu.xml`;
+   - huyện: so khớp tên trong cùng tỉnh;
+   - xã: so khớp tên và kiểm tra `MaTenDonViCha` có chứa mã huyện.
+   Trước khi so sánh, chuỗi được chuẩn hóa bằng `StringNormalizer`.
+4. Kết quả lưu vào `listDiaChiCu` và hiển thị ở `dataGridView1`.
 
-### 4. Ghi danh mục và địa chỉ mới
+### Bước 3: Chuyển đổi
 
-- Nút **Thêm mới danh sách tỉnh thành mới vào cơ sở dữ liệu** đọc `Data/DanhSachMoi/DanhSachTinhThanhMoi.xml`, chạy script SQL và gọi stored procedure chèn tỉnh thành.
-- Nút **Thêm mới danh sách xã phương mới vào cơ sở dữ liệu** đọc `Data/DanhSachMoi/DanhSachQuanHuyenMoi.xml`, chạy script và gọi stored procedure tương ứng.
-- Nút **Insert vào địa chỉ mới** chia `listDiaChiMoi` theo batch, tạo dữ liệu chèn và gọi stored procedure lưu địa chỉ.
+**ConverDiaChiCuThanhDiaChiMoi** (`button4_Click`):
 
-## Helpers và model
+1. Nạp `TinhThanh_New` và `XaPhuong_New` từ cơ sở dữ liệu.
+2. Chia `listDiaChiCu` thành hai nhóm và xử lý song song:
+   - **Đủ 3 cấp** (có tỉnh, huyện, xã): gửi `RequesModel_3Cap` (mã tỉnh/huyện/xã + số nhà) đến `API_ENDPOINT_CONVERT_3CAP` với Bearer token, nhận về `Root`.
+   - **Thiếu cấp**: gửi `RequestModel` (chuỗi địa chỉ đầy đủ; `TP.` được thay bằng "Thành phố Hồ Chí Minh") đến `API_ENDPOINT_CONVERT_ADDRESS`, nhận về `ApiResponseDto`.
+3. Từ mã hoặc tên trả về, tìm `TinhThanh_New` và `XaPhuong_New` tương ứng (có cache trong `listTinhThanhNew_TonTai` và `ListXaPhuongNew_TonTai`) rồi tạo `DiaChiMoi`.
+4. Gom kết quả vào `listDiaChiMoi` và hiển thị ở `dataGridView2`.
 
-### `AddressQueryBuilder`
+Lỗi khi gọi API bị bỏ qua: bản ghi vẫn nằm trong danh sách nhưng không có tỉnh/xã mới, và sẽ bị bỏ qua ở bước 4.
 
-`AddressQueryBuilder.Build(addressType)` giữ phần SELECT dùng chung ở một chỗ, còn phần JOIN được chọn theo loại địa chỉ. Điều này loại bỏ bốn khối SQL giống nhau trong event handler. Việc ánh xạ lựa chọn sang tên cột được kiểm soát trong code; giá trị ComboBox không được chèn trực tiếp vào SQL.
+**Test** (`button7_Click`) chỉ chạy luồng API 3 cấp cho toàn bộ `listDiaChiCu`.
 
-### `StringNormalizer`
+### Bước 4: Ghi địa chỉ mới
 
-Các hàm công khai hiện có:
+**Insert vào địa chỉ mới** (`button5_Click`):
 
-- `NormalizeProvinceName`: bỏ một số tiền tố tỉnh/thành phố.
-- `NormalizeDistrictName`: bỏ tiền tố quận, huyện, thị xã, thành phố và các dạng viết tắt hiện được hỗ trợ.
-- `NormalizeWardName`: bỏ tiền tố phường, xã, thị trấn và một số dạng viết tắt.
-- `StandardizeString`: chuyển chữ thường, tách dấu Unicode, bỏ dấu và loại ký tự ngoài chữ/số ASCII.
-- `ConvertVietnameseAbbreviations`: thay chuỗi `TP.` bằng cụm từ tiếng Việt đang được cấu hình trong hàm.
+1. Chạy `Sql/Sql_procedure.sql` để tạo `spd_InsertDanhSachDiaChiMoi`.
+2. Chia `listDiaChiMoi` thành từng lô 100 bản ghi, bỏ các bản ghi không có tỉnh mới hoặc không có địa chỉ đầy đủ.
+3. Mỗi lô được dựng thành `SELECT ... UNION ALL ...` và truyền vào procedure cùng loại địa chỉ (`@Loai`).
+4. Procedure tạo bản ghi `DiaChi_New`, cập nhật cột `*_New` tương ứng trên `HoSo` và sao chép số nhà từ địa chỉ cũ.
 
-Các hàm `Normalize...` giữ nguyên `null` và chuỗi rỗng. Hai hàm chuẩn hóa tổng quát hiện chưa có xử lý riêng cho `null`; unit test ghi nhận hành vi hiện tại này.
+## Nguyên tắc khi phát triển tiếp
 
-### Model địa chỉ
-
-- `DiaChiCu` chứa mã hồ sơ, địa chỉ đầy đủ, các cấp hành chính cũ và số nhà.
-- `DiaChiMoi` chứa mã hồ sơ, tham chiếu tỉnh/phường mới và địa chỉ đầy đủ mới.
-- Các request/response DTO trong `DiaChiCu.cs` ánh xạ dữ liệu trao đổi với hai API.
-
-## Unit test
-
-Test project dùng xUnit, nhắm đến .NET 10 và liên kết trực tiếp `StringNormalizer.cs`. Cách này cho phép kiểm thử helper độc lập mà không cần nạp WinForms, XML danh mục hay SQL Server.
-
-Chạy test từ thư mục gốc repository:
-
-```sh
-dotnet test ConvertDanhSachTinhThanh.Tests/ConvertDanhSachTinhThanh.Tests.csproj
-```
-
-Test hiện bao phủ:
-
-- Các tiền tố tỉnh/thành phố, quận/huyện và xã/phường.
-- `null` và chuỗi rỗng ở các hàm `Normalize...`.
-- Bỏ dấu tiếng Việt, đổi chữ thường và loại dấu câu/ký tự đặc biệt.
-- Thay `TP.` theo đúng kiểu chữ hiện được hỗ trợ.
-- Hành vi hiện tại khi truyền `null` cho `StandardizeString` và `ConvertVietnameseAbbreviations`.
-
-Các thao tác SQL, event WinForms và gọi API chưa có unit test trong test project này.
-
-## Build và môi trường
-
-Để build ứng dụng WinForms, môi trường Windows cần có .NET Framework 4.8 Developer Pack/reference assemblies và các dependency được khai báo trong project.
-
-Môi trường macOS hiện tại không có reference assemblies của .NET Framework 4.8; vì vậy lệnh `dotnet build src/ConvertDanhSachTinhThanh/ConvertDanhSachTinhThanh.csproj` dừng ở lỗi `MSB3644`. Lỗi này xảy ra trước khi compiler kiểm tra đầy đủ mã nguồn ứng dụng. Test project .NET 10 là project riêng và không thay thế việc build ứng dụng WinForms trên Windows.
-
-## Nguyên tắc khi tiếp tục refactor
-
-- Giữ nguyên `Form1` là lớp `partial` để tương thích với `Form1.Designer.cs` và `Form1.resx`.
-- Đặt xử lý giao diện trong file phù hợp với trách nhiệm; logic thuần có thể kiểm thử nên tiếp tục được tách thành helper.
-- Khi thêm file source, cập nhật `ConvertDanhSachTinhThanh.csproj` vì đây là project kiểu cũ, không tự động glob toàn bộ file `.cs`.
-- Không ghi thông tin kết nối hoặc bí mật API vào tài liệu hay test fixture.
+- Giữ `Form1` là lớp `partial` để tương thích với Designer và `.resx`. Đặt code mới vào file phù hợp với trách nhiệm.
+- Logic thuần (không phụ thuộc WinForms/SQL) nên tách vào `Helpers/` hoặc `Model/`. Project test tự động biên dịch kèm các thư mục này nên có thể viết test ngay.
+- Cập nhật `ConvertDanhSachTinhThanh.csproj` mỗi khi thêm file.
+- Không đưa chuỗi kết nối hay khóa API vào tài liệu, test hoặc mã nguồn. Xem [KNOWN_ISSUES.md](KNOWN_ISSUES.md).
