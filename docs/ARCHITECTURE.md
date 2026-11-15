@@ -88,13 +88,13 @@ Cả hai procedure chỉ chèn những mã chưa có, nên chạy lại không t
 1. Nạp `TinhThanh_New` và `XaPhuong_New` từ cơ sở dữ liệu.
 2. Chia `listDiaChiCu` thành hai nhóm và xử lý song song:
    - **Đủ 3 cấp** (có tỉnh, huyện, xã): gửi `RequesModel_3Cap` (mã tỉnh/huyện/xã + số nhà) đến `API_ENDPOINT_CONVERT_3CAP` với Bearer token, nhận về `Root`.
-   - **Thiếu cấp**: gửi `RequestModel` (chuỗi địa chỉ đầy đủ; `TP.` được thay bằng "Thành phố Hồ Chí Minh") đến `API_ENDPOINT_CONVERT_ADDRESS`, nhận về `ApiResponseDto`.
+   - **Thiếu cấp**: gửi `RequestModel` (chuỗi địa chỉ đầy đủ; viết tắt được mở rộng: `TP.HCM` → "Thành phố Hồ Chí Minh", `TP. Hà Nội` → "Thành phố Hà Nội") đến `API_ENDPOINT_CONVERT_ADDRESS`, nhận về `ApiResponseDto`.
 3. Từ mã hoặc tên trả về, tìm `TinhThanh_New` và `XaPhuong_New` tương ứng (có cache trong `listTinhThanhNew_TonTai` và `ListXaPhuongNew_TonTai`) rồi tạo `DiaChiMoi`.
 4. Gom kết quả vào `listDiaChiMoi` và hiển thị ở `dataGridView2`.
 
 Lỗi khi gọi API bị bỏ qua: bản ghi vẫn nằm trong danh sách nhưng không có tỉnh/xã mới, và sẽ bị bỏ qua ở bước 4.
 
-**Test** (`button7_Click`) chỉ chạy luồng API 3 cấp cho toàn bộ `listDiaChiCu`.
+**Test** (`button7_Click`) chỉ chạy luồng API 3 cấp cho toàn bộ `listDiaChiCu`, hiển thị kết quả ở `dataGridView2` và thay `listDiaChiMoi` bằng kết quả đó (nút Insert sẽ ghi đúng những gì đang hiển thị).
 
 ### Bước 4: Ghi địa chỉ mới
 

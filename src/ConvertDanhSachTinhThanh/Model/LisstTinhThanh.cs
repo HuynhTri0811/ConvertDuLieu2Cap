@@ -7,6 +7,10 @@ using System.Xml.Serialization;
 
 namespace ConvertDanhSachTinhThanh
 {
+    /// <summary>
+    /// Gốc của Data/DanhSachMoi/DanhSachTinhThanhMoi.xml: danh sách tỉnh mới (34 tỉnh).
+    /// Tên lớp viết sai chính tả (Lisst) nhưng được giữ để không phải sửa nơi gọi.
+    /// </summary>
     [XmlRoot("root")]
     public class LisstTinhThanh
     {
@@ -15,6 +19,9 @@ namespace ConvertDanhSachTinhThanh
 
     }
 
+    /// <summary>
+    /// Gốc của Data/DanhSachCu/DanhSachTinhThanhCu.xml: danh sách tỉnh cũ (63 tỉnh).
+    /// </summary>
     [XmlRoot("root")]
     public class LisstTinhThanhCu
     {

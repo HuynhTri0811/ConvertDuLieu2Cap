@@ -65,6 +65,25 @@ public class StringNormalizerTests
     }
 
     [Theory]
+    [InlineData("Phường Xuân La", " Xuân La")]
+    [InlineData("Xã Xuân Thu", " Xuân Thu")]
+    [InlineData("X. Tân An", " Tân An")]
+    [InlineData("Phường Xa La", " Xa La")]
+    public void NormalizeWardName_KeepsNamesStartingWithX(string input, string expected)
+    {
+        Assert.Equal(expected, StringNormalizer.NormalizeWardName(input));
+    }
+
+    [Fact]
+    public void NormalizeWardName_WardStartingWithX_MatchesOldCatalogName()
+    {
+        // Form1.GetDanhSachXaPhuongCu compares like this against XaPhuongCu.xml, where the name is "XuânLa".
+        string fromDatabase = StringNormalizer.NormalizeWardName("Phường Xuân La").Replace(" ", "");
+
+        Assert.Equal(StringNormalizer.StandardizeString("XuânLa"), StringNormalizer.StandardizeString(fromDatabase));
+    }
+
+    [Theory]
     [InlineData("Đường Lê Lợi, P. Bến Nghé", "duongleloipbennghe")]
     [InlineData("  Hà Nội  ", "hanoi")]
     [InlineData("Café #1", "cafe1")]
@@ -81,10 +100,18 @@ public class StringNormalizerTests
     }
 
     [Theory]
-    [InlineData("TP. Hồ Chí Minh", "Thành phố Hồ Chí Minh Hồ Chí Minh")]
-    [InlineData("TP. Thủ Đức, TP. Hồ Chí Minh", "Thành phố Hồ Chí Minh Thủ Đức, Thành phố Hồ Chí Minh Hồ Chí Minh")]
+    [InlineData("TP. Hồ Chí Minh", "Thành phố Hồ Chí Minh")]
+    [InlineData("TP. Hà Nội", "Thành phố Hà Nội")]
+    [InlineData("12 Trần Phú, TP.Đà Nẵng", "12 Trần Phú, Thành phố Đà Nẵng")]
+    [InlineData("TP. Thủ Đức, TP. Hồ Chí Minh", "Thành phố Thủ Đức, Thành phố Hồ Chí Minh")]
+    [InlineData("12 Lê Lợi, Quận 1, TP.HCM", "12 Lê Lợi, Quận 1, Thành phố Hồ Chí Minh")]
+    [InlineData("12 Lê Lợi, Q.1, Tp HCM", "12 Lê Lợi, Q.1, Thành phố Hồ Chí Minh")]
+    [InlineData("12 Lê Lợi, Quận 1, TPHCM", "12 Lê Lợi, Quận 1, Thành phố Hồ Chí Minh")]
+    [InlineData("12 Lê Lợi, Quận 1, TP.", "12 Lê Lợi, Quận 1, Thành phố Hồ Chí Minh")]
     [InlineData("tp. Hồ Chí Minh", "tp. Hồ Chí Minh")]
-    public void ConvertVietnameseAbbreviations_ReplacesExactUppercaseAbbreviation(string input, string expected)
+    [InlineData("Thôn TPhú, Xã An Bình", "Thôn TPhú, Xã An Bình")]
+    [InlineData("Không có viết tắt", "Không có viết tắt")]
+    public void ConvertVietnameseAbbreviations_ExpandsCityAbbreviations(string input, string expected)
     {
         Assert.Equal(expected, StringNormalizer.ConvertVietnameseAbbreviations(input));
     }

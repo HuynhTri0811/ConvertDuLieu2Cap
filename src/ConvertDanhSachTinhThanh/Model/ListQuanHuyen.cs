@@ -7,6 +7,10 @@ using System.Xml.Serialization;
 
 namespace ConvertDanhSachTinhThanh
 {
+    /// <summary>
+    /// Gốc của Data/DanhSachMoi/DanhSachQuanHuyenMoi.xml. Dù tên là quận/huyện,
+    /// nội dung là danh sách XÃ/PHƯỜNG mới (3.321 bản ghi).
+    /// </summary>
     [XmlRoot("root")]
     public class ListQuanHuyen
     {
@@ -16,6 +20,9 @@ namespace ConvertDanhSachTinhThanh
     }
 
 
+    /// <summary>
+    /// Gốc của Data/DanhSachCu/DanhSachQuanHuyenCu.xml: quận/huyện cũ.
+    /// </summary>
     [XmlRoot("DanhSachDonVi")]
     public class ListQuanHuyenCu
     {
@@ -25,6 +32,9 @@ namespace ConvertDanhSachTinhThanh
     }
 
 
+    /// <summary>
+    /// Gốc của Data/DanhSachCu/XaPhuongCu.xml: xã/phường cũ.
+    /// </summary>
     [XmlRoot("DanhSachDonVi")]
     public class ListXaPhuongCu
     {

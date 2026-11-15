@@ -7,6 +7,9 @@ using System.Xml.Serialization;
 
 namespace ConvertDanhSachTinhThanh
 {
+    /// <summary>
+    /// Một tỉnh MỚI trong DanhSachTinhThanhMoi.xml; code là mã quản lý của tỉnh.
+    /// </summary>
     [XmlRoot("provinces")]
     public class TinhThanh
     {
