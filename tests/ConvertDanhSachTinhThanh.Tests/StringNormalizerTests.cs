@@ -1,3 +1,4 @@
+using Xunit;
 using ConvertDanhSachTinhThanh.Helpers;
 
 namespace ConvertDanhSachTinhThanh.Tests;
@@ -64,7 +65,7 @@ public class StringNormalizerTests
     }
 
     [Theory]
-    [InlineData("Đường Lê Lợi, P. Bến Nghé", "duongleloipbenghe")]
+    [InlineData("Đường Lê Lợi, P. Bến Nghé", "duongleloipbennghe")]
     [InlineData("  Hà Nội  ", "hanoi")]
     [InlineData("Café #1", "cafe1")]
     [InlineData("", "")]
