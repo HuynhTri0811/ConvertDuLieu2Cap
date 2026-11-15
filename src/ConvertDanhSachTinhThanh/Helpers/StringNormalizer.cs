@@ -55,8 +55,8 @@ namespace ConvertDanhSachTinhThanh.Helpers
         }
 
         /// <summary>
-        /// Bỏ tiền tố phường/xã/thị trấn và viết tắt ("P.", "TT"). Giữ nguyên null và chuỗi rỗng.
-        /// Lưu ý: Replace("X", "") xóa mọi chữ X hoa, nên "Xuân La" thành "uân La" và sẽ không khớp danh mục.
+        /// Bỏ tiền tố phường/xã/thị trấn và viết tắt ("P.", "X.", "TT"). Giữ nguyên null và chuỗi rỗng.
+        /// Chỉ bỏ "X." chứ không bỏ chữ "X" đơn lẻ, để tên như "Xuân La" giữ nguyên.
         /// </summary>
         public static string NormalizeWardName(string input)
         {
@@ -71,7 +71,7 @@ namespace ConvertDanhSachTinhThanh.Helpers
                           .Replace("p.", "")
                           .Replace("TT", "")
                           .Replace("Xã", "")
-                          .Replace("X", "")
+                          .Replace("X.", "")
                           .Replace("xã", "");
             return result;
         }

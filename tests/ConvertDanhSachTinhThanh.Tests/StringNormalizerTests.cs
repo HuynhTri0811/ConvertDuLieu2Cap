@@ -65,6 +65,25 @@ public class StringNormalizerTests
     }
 
     [Theory]
+    [InlineData("Phường Xuân La", " Xuân La")]
+    [InlineData("Xã Xuân Thu", " Xuân Thu")]
+    [InlineData("X. Tân An", " Tân An")]
+    [InlineData("Phường Xa La", " Xa La")]
+    public void NormalizeWardName_KeepsNamesStartingWithX(string input, string expected)
+    {
+        Assert.Equal(expected, StringNormalizer.NormalizeWardName(input));
+    }
+
+    [Fact]
+    public void NormalizeWardName_WardStartingWithX_MatchesOldCatalogName()
+    {
+        // Form1.GetDanhSachXaPhuongCu compares like this against XaPhuongCu.xml, where the name is "XuânLa".
+        string fromDatabase = StringNormalizer.NormalizeWardName("Phường Xuân La").Replace(" ", "");
+
+        Assert.Equal(StringNormalizer.StandardizeString("XuânLa"), StringNormalizer.StandardizeString(fromDatabase));
+    }
+
+    [Theory]
     [InlineData("Đường Lê Lợi, P. Bến Nghé", "duongleloipbennghe")]
     [InlineData("  Hà Nội  ", "hanoi")]
     [InlineData("Café #1", "cafe1")]
