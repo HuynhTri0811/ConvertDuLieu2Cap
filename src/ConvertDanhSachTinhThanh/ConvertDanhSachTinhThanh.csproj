@@ -125,15 +125,6 @@
     <Content Include="Sql\Sql_procedure.sql">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="Sql_procedure.sql">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Sql_procedure_InsertTinhThanh.sql">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Sql_procedure_InsertXaPhuong.sql">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
     <EmbeddedResource Include="Forms\Form1.resx">
       <DependentUpon>Form1.cs</DependentUpon>
     </EmbeddedResource>
@@ -155,6 +146,7 @@
       <SubType>Designer</SubType>
     </Content>
     <None Include="ConvertDanhSachTinhThanh_TemporaryKey.pfx" />
+    <None Include="Sql\View_DiaChi.sql" />
     <None Include="packages.config" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
